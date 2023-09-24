@@ -9,10 +9,54 @@
 ---
 
 ## Table of Contents
+0. [Project File Structure](#project-file-structure)
 1. [Introduction](#introduction)
 2. [Command Switches](#command-switches)
 3. [Usage Examples](#usage-examples)
 4. [Functions](#functions)
+
+---
+
+## Project File Structure
+
+```
+GoatTool/
+│
+├── README.md                     # Overview of the tool, how to install and basic usage
+│
+├── .gitignore                    # Git ignore file to exclude unnecessary files
+│
+├── Makefile                      # Used for compilation and possibly testing
+│
+├── src/                          # Contains the source code files
+│   ├── main.c                    # Entry point for the GoatTool
+│   ├── display.c                 # Contains functions related to displaying data (like `display_help`)
+│   ├── file_operations.c         # Contains file related operations (create, delete, copy, move etc.)
+│   ├── search.c                  # Contains functions related to file searching (`search_files`)
+│   ├── compression.c             # Handles .goat compression & decompression (`compress_goat`, `decompress_goat`)
+│   ├── permissions.c             # Related to file permissions (`print_file_permissions`)
+│   └── utils.c                   # Miscellaneous utility functions (could be error handling, string manipulations, etc.)
+│
+├── include/                      # Contains header files corresponding to source files
+│   ├── display.h                 
+│   ├── file_operations.h
+│   ├── search.h
+│   ├── compression.h
+│   ├── permissions.h
+│   └── utils.h
+│
+├── doc/                          # Documentation directory
+│   ├── DESIGN.md                 # Design document as per the project requirement
+│   └── USAGE.md                  # Extended usage guide based on the provided documentation
+│
+├── tests/                        # Unit tests (if any are written)
+│   ├── test_file_operations.c   
+│   ├── test_search.c
+│   └── ...
+│
+└── assets/                       # Any additional assets like images for README or design diagrams
+    └── logo.png                  # An example logo for GoatTool (if you have one)
+```
 
 ---
 

@@ -217,6 +217,8 @@ File decompressed to example.txt
 
 ## Function Call Graph
 
+Note: The accuracy of the call graph highly depends on the actual implementation details in the source code. The revised call graph is based on assumptions made from the provided context. If the complete source code or a more detailed description is provided, a more accurate call graph can be constructed.
+
 ### main (driver function)
 - **Parameters:**
     - int argc

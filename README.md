@@ -14,6 +14,8 @@
 2. [Command Switches](#command-switches)
 3. [Usage Examples](#usage-examples)
 4. [Functions](#functions)
+5. [Test Cases](#test-cases)
+6. [Privacy Disclosure](#privacy-disclosure)
 
 ---
 
@@ -209,3 +211,195 @@ File decompressed to example.txt
   - `filename`: File whose permissions are to be printed.
 - **Return Value:** None.
 - **Side Effects:** Outputs file permissions to the console.
+
+---
+
+## Test Cases
+
+---
+
+**Operation 1: `-h` (Display the help menu)**
+1. Input: `./goattool -h`
+   Expected Output: *Help and usage instructions for GoatTool.*
+
+---
+
+**Operation 2: `-p [FILENAME]` (Print the contents of a file)**
+1. Input: `./goattool -p example_file.txt`
+   Expected Output: "This is an example file".
+
+2. Input: `./goattool -p non_existent_file.txt`
+   Expected Output: "Error: File does not exist."
+
+3. Input: `./goattool -p`
+   Expected Output: "Error: No filename provided."
+
+4. Input: `./goattool -p directory_name`
+   Expected Output: "Error: Cannot print a directory."
+
+5. Input: `./goattool -p locked_file.txt`
+   Expected Output: "Error: Permission denied."
+
+---
+
+**Operation 3: `-s [FILENAME]` (Search a file for a string)**
+1. Input: `./goattool -s "search_term" example_file.txt`
+   Expected Output: "Line 5: This is a line with search_term."
+
+2. Input: `./goattool -s "missing_term" example_file.txt`
+   Expected Output: "No matches found."
+
+3. Input: `./goattool -s`
+   Expected Output: "Error: No search term or filename provided."
+
+4. Input: `./goattool -s "search_term"`
+   Expected Output: "Error: No filename provided."
+
+5. Input: `./goattool -s "search_term" non_existent_file.txt`
+   Expected Output: "Error: File does not exist."
+
+---
+
+**Operation 4: `-z [FILENAME]` (Print the size of a file)**
+1. Input: `./goattool -z example_file.txt`
+   Expected Output: "Size: 500 bytes."
+
+2. Input: `./goattool -z`
+   Expected Output: "Error: No filename provided."
+
+3. Input: `./goattool -z non_existent_file.txt`
+   Expected Output: "Error: File does not exist."
+
+4. Input: `./goattool -z directory_name`
+   Expected Output: "Error: Cannot get the size of a directory."
+
+5. Input: `./goattool -z locked_file.txt`
+   Expected Output: "Error: Permission denied."
+
+---
+
+**Operation 5: `-m [OUTPUT_FILE] [INPUT_FILES...]` (Merge multiple files)**
+1. Input: `./goattool -m merged.txt file1.txt file2.txt`
+   Expected Output: "Files merged successfully."
+
+2. Input: `./goattool -m merged.txt non_existent_file.txt file2.txt`
+   Expected Output: "Error: One or more input files do not exist."
+
+3. Input: `./goattool -m`
+   Expected Output: "Error: No output or input files provided."
+
+4. Input: `./goattool -m merged.txt`
+   Expected Output: "Error: At least two input files are required."
+
+5. Input: `./goattool -m merged.txt file1.txt locked_file.txt`
+   Expected Output: "Error: Permission denied for one or more files."
+
+---
+
+**Operation 6: `-c [FILENAME]` (Compress a file into .goat format)**
+1. Input: `./goattool -c example_file.txt`
+   Expected Output: "File compressed to example_file.goat."
+
+2. Input: `./goattool -c`
+   Expected Output: "Error: No filename provided."
+
+3. Input: `./goattool -c non_existent_file.txt`
+   Expected Output: "Error: File does not exist."
+
+4. Input: `./goattool -c directory_name`
+   Expected Output: "Error: Cannot compress a directory."
+
+5. Input: `./goattool -c locked_file.txt`
+   Expected Output: "Error: Permission denied."
+
+---
+
+**Operation 7: `-d [FILENAME]` (Decompress a .goat file)**
+1. Input: `./goattool -d example.goat`
+   Expected Output: "File decompressed to example.txt."
+
+2. Input: `./goattool -d`
+   Expected Output: "Error: No filename provided."
+
+3. Input: `./goattool -d non_existent_file.goat`
+   Expected Output: "Error: File does not exist."
+
+4. Input: `./goattool -d directory_name`
+   Expected Output: "Error: Cannot decompress a directory."
+
+5. Input: `./goattool -d locked_file.goat`
+   Expected Output: "Error: Permission denied."
+
+---
+
+**Operation 8: `-r [FILENAME]` (Print file permissions)**
+1. Input: `./goattool -r example_file.txt`
+   Expected Output: "Permissions: -rw-r--r--."
+
+2. Input: `./goattool -r`
+   Expected Output: "Error: No filename provided."
+
+3. Input: `./goattool -r non_existent_file.txt`
+   Expected Output: "Error: File does not exist."
+
+4. Input: `./goattool -r locked_file.txt`
+   Expected Output: "Permissions: ---------."
+
+5. Input: `./goattool -r directory_name`
+   Expected Output: "Permissions: drwxr-xr-x."
+
+---
+
+**Operation 9: `-v [SOURCE] [DESTINATION]` (Move or rename a file)**
+1. Input: `./goattool -v source.txt dest.txt`
+   Expected Output: "File moved/renamed successfully."
+
+2. Input: `./goattool -v`
+   Expected Output: "Error: No source or destination provided."
+
+3. Input: `./goattool -v non_existent_file.txt dest.txt`
+   Expected Output: "Error: Source file does not exist."
+
+4. Input: `./goattool -v source.txt`
+   Expected Output: "Error: No destination provided."
+
+5. Input: `./goattool -v locked_file.txt dest.txt`
+   Expected Output: "Error: Permission denied."
+
+---
+
+**Default Case (No switch provided)**
+1. Input: `./goattool`
+   Expected Output: "Error: No command switch provided. Use -h for help."
+
+---
+
+**Sample Files:**
+1. **example_file.txt**:
+```
+This is an example file.
+It has multiple lines.
+And it is used for testing purposes.
+Make sure you have fun testing!
+This is a line with search_term.
+```
+
+2. **file1.txt**:
+```
+This is the first file.
+It will be merged with another.
+```
+
+3. **file2.txt**:
+```
+This is the second file.
+Merged content goes below the first file's content.
+```
+
+4. **locked_file.txt**: 
+(Note: This file is locked or has permissions set to disallow reading. Contents cannot be displayed.)
+
+---
+
+## Privacy Disclosure
+Thank you for using Goat Tool, a command-line utility. Your privacy and the security of your data are of utmost importance to us. Goat Tool is a command-line utility and does not inherently collect or store personal information unless explicitly provided by the user. The types of information that may be accessed are files and directory information, search queries, and encryption passwords. Goat Tool operates primarily on your local machine and does not transmit or share your data with external servers or third parties. Your information is used for file operations, search functionality, and encryption. Information is taken seriously, and Goat Tool operates within your local environment. It does not transmit data over networks unless you explicitly instruct it to do so. As a user of GoatTool, it is your responsibility to ensure that you only provide necessary and appropriate data for the commands you execute. Be cautious when using sensitive information or credentials with Goat Tool, especially in scripts or automation tasks. Goat Tool does not integrate with or use third-party services that might impact your privacy. By using Goat Tool, you acknowledge and agree to the practices described in this Privacy Disclosure Statement.

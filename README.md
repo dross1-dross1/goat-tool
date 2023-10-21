@@ -318,8 +318,6 @@ Note: The accuracy of the call graph highly depends on the actual implementation
 
 ## Test Cases
 
----
-
 **Operation 1: `-h` (Display the help menu)**
 1. Input: `./goattool -h`
    Expected Output: *Help and usage instructions for GoatTool.*

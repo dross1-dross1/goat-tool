@@ -403,9 +403,15 @@ Merged content goes below the first file's content.
 
 ## Privacy Disclosure
 At Goat Tool, we deeply value the trust you place in our technology. Balancing robust utility with steadfast data protection is paramount to us.
+
 Goat Tool is designed as a local command-line utility, meaning it primarily operates within the confines of your own computer. Consequently, it does not inherently gather, store, or share your personal data unless explicitly directed by you.
+
 When you interact with Goat Tool, the application may access files, directory structures, search phrases, and encryption passcodes. This access serves to facilitate file operations, enhance search accuracy, and ensure robust encryption.
+
 While Goat Tool is potent, its actions are bounded by your local environment. Without your explicit command, no data will traverse networks or reach external parties. We've consciously refrained from integrating third-party services that could compromise your privacy.
+
 As stewards of this tool, we encourage you to be discerning. When employing Goat Tool, especially within scripts or automated sequences, exercise caution. Only provide data that's essential for your intended operations, and always be wary of using sensitive credentials.
+
 By choosing to utilize Goat Tool, you are endorsing the practices elucidated in this Privacy Disclosure. Your confidence inspires us, and we're committed to upholding these principles with utmost diligence.
+
 Thank you for entrusting Goat Tool with your tasks.

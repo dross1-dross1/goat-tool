@@ -14,8 +14,9 @@
 2. [Command Switches](#command-switches)
 3. [Usage Examples](#usage-examples)
 4. [Functions](#functions)
-5. [Test Cases](#test-cases)
-6. [Privacy Disclosure](#privacy-disclosure)
+5. [Function Call Graph](#function-call-graph)
+6. [Test Cases](#test-cases)
+7. [Privacy Disclosure](#privacy-disclosure)
 
 ---
 
@@ -211,6 +212,105 @@ File decompressed to example.txt
   - `filename`: File whose permissions are to be printed.
 - **Return Value:** None.
 - **Side Effects:** Outputs file permissions to the console.
+
+---
+
+## Function Call Graph
+
+### main (driver function)
+- **Parameters:**
+    - int argc
+    - char* argv[]
+- **Local Variables:**
+    - (To be determined from main.c)
+- **Calls:**
+    - display_help
+    - create_file
+    - delete_file
+    - copy_file
+    - move_file
+    - list_directory
+    - search_files
+    - encrypt_file
+    - print_file_content
+    - compress_goat
+    - decompress_goat
+    - print_file_permissions
+
+### display_help
+- **Parameters:** None.
+- **Local Variables:** None.
+- **Calls:** None.
+
+### create_file
+- **Parameters:**
+    - const char* filename
+- **Local Variables:** None.
+- **Calls:** None.
+
+### delete_file
+- **Parameters:**
+    - const char* filename
+- **Local Variables:** None.
+- **Calls:** None.
+
+### copy_file
+- **Parameters:**
+    - const char* source
+    - const char* destination
+- **Local Variables:** None.
+- **Calls:** None.
+
+### move_file
+- **Parameters:**
+    - const char* source
+    - const char* destination
+- **Local Variables:** None.
+- **Calls:** None.
+
+### list_directory
+- **Parameters:**
+    - const char* directory
+- **Local Variables:** None.
+- **Calls:** None.
+
+### search_files
+- **Parameters:**
+    - const char* directory
+    - const char* query
+- **Local Variables:** None.
+- **Calls:** None.
+
+### encrypt_file (added based on context)
+- **Parameters:**
+    - const char* filename
+    - const char* password
+- **Local Variables:** None.
+- **Calls:** None.
+
+### print_file_content
+- **Parameters:**
+    - const char* filename
+- **Local Variables:** None.
+- **Calls:** None.
+
+### compress_goat
+- **Parameters:**
+    - const char* filename
+- **Local Variables:** None.
+- **Calls:** None.
+
+### decompress_goat
+- **Parameters:**
+    - const char* filename
+- **Local Variables:** None.
+- **Calls:** None.
+
+### print_file_permissions
+- **Parameters:**
+    - const char* filename
+- **Local Variables:** None.
+- **Calls:** None.
 
 ---
 
@@ -425,5 +525,3 @@ We urge you to exercise caution when providing sensitive information or credenti
 Your trust means everything to us. We want to ensure that while using GoatTool, you can focus on the tasks at hand without having to worry about privacy concerns. By using GoatTool, you acknowledge that you understand and consent to the practices detailed in this Privacy Disclosure.
 
 Thank you for choosing GoatTool.
-
----

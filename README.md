@@ -402,16 +402,28 @@ Merged content goes below the first file's content.
 ---
 
 ## Privacy Disclosure
-At Goat Tool, we deeply value the trust you place in our technology. Balancing robust utility with steadfast data protection is paramount to us.
 
-Goat Tool is designed as a local command-line utility, meaning it primarily operates within the confines of your own computer. Consequently, it does not inherently gather, store, or share your personal data unless explicitly directed by you.
+Welcome to GoatTool. We genuinely appreciate your trust and are firmly committed to preserving the privacy and security of your data. 
 
-When you interact with Goat Tool, the application may access files, directory structures, search phrases, and encryption passcodes. This access serves to facilitate file operations, enhance search accuracy, and ensure robust encryption.
+### Our Commitment:
+*GoatTool*, while being a versatile command-line utility, is designed with the utmost care to respect your privacy. It operates primarily in your local environment, ensuring that your data stays where it belongs: with you.
 
-While Goat Tool is potent, its actions are bounded by your local environment. Without your explicit command, no data will traverse networks or reach external parties. We've consciously refrained from integrating third-party services that could compromise your privacy.
+### Data We Access:
+1. **Files and Directories**: GoatTool may access your files and directories to perform its core functionalities. This is solely dependent on the commands you execute.
+2. **Search Queries**: Queries you use for searching within files are processed, but not stored or transmitted.
+3. **Encryption Passwords**: If you employ encryption features, the passwords are utilized for that specific purpose alone and are neither stored nor transmitted elsewhere.
 
-As stewards of this tool, we encourage you to be discerning. When employing Goat Tool, especially within scripts or automated sequences, exercise caution. Only provide data that's essential for your intended operations, and always be wary of using sensitive credentials.
+### What We Do Not Do:
+- GoatTool will never transmit or share your data with external servers or third parties.
+- We do not integrate with or use third-party services that might jeopardize your privacy.
+- Data is not sent over networks unless you explicitly command the tool to do so.
 
-By choosing to utilize Goat Tool, you are endorsing the practices elucidated in this Privacy Disclosure. Your confidence inspires us, and we're committed to upholding these principles with utmost diligence.
+### Your Responsibility:
+We urge you to exercise caution when providing sensitive information or credentials, especially while scripting or performing automated tasks with GoatTool. Always ensure you are only feeding the necessary and appropriate data for your tasks.
 
-Thank you for entrusting Goat Tool with your tasks.
+### Conclusion:
+Your trust means everything to us. We want to ensure that while using GoatTool, you can focus on the tasks at hand without having to worry about privacy concerns. By using GoatTool, you acknowledge that you understand and consent to the practices detailed in this Privacy Disclosure.
+
+Thank you for choosing GoatTool.
+
+---

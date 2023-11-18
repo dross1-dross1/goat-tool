@@ -1,79 +1,70 @@
-// file_operations.c
+
+// src/file_operations.c
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include "file_operations.h"
 
-// Function definitions
-int create_file(const char* filename) {
-FILE* file = fopen(filename, "w");  // Open file in write mode
+void print_file_content(const char* filename) {
+    FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        perror("Error creating file");
-        return 1;  // Return non-zero for failure
+        perror("Error opening file");
+        return;
     }
 
-    // Optional: You can write some initial content to the file if needed
-    fprintf(file, "This is a newly created file.\n");
+    char buffer[1024];
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        printf("%s", buffer);
+    }
 
-    fclose(file);  // Close the file
-    return 0;      // Return zero for success
+    fclose(file);
 }
 
-int delete_file(const char* filename) {
-    int status = remove(filename);  // Use the remove function to delete the file
-
-    if (status == 0) {
-        printf("File \"%s\" deleted successfully.\n", filename);
-        return 0;  // Return zero for success
-    } else {
-        perror("Error deleting file");
-        return 1;  // Return non-zero for failure
+void print_size(const char* filename) {
+    FILE* file = fopen(filename, "r");
+    if (!file) {
+        perror("Error opening file");
+        return;
     }
+
+    fseek(file, 0, SEEK_END); // Seek to the end of the file
+    long size = ftell(file);  // Get the current file pointer position, which is the file size
+    fclose(file);
+
+    printf("Size: %ld bytes\n", size);
 }
 
-int copy_file(const char* source, const char* destination) {
-    FILE* source_file = fopen(source, "rb");  // Open the source file in read-binary mode
-    if (source_file == NULL) {
-        perror("Error opening source file");
-        return 1;  // Return non-zero for failure
+int merge_file(const char* output_file, int num_files, const char** input_files) {
+    FILE* outfile = fopen(output_file, "w");
+    if (!outfile) {
+        perror("Error opening output file");
+        return -1;
     }
 
-    FILE* destination_file = fopen(destination, "wb");  // Open the destination file in write-binary mode
-    if (destination_file == NULL) {
-        perror("Error opening destination file");
-        fclose(source_file);  // Close the source file before returning
-        return 1;            // Return non-zero for failure
-    }
-
-    int ch;  // Variable to store each character read from the source file
-
-    // Copy each character from the source file to the destination file
-    while ((ch = fgetc(source_file)) != EOF) {
-        if (fputc(ch, destination_file) == EOF) {
-            perror("Error writing to destination file");
-            fclose(source_file);
-            fclose(destination_file);
-            return 1;  // Return non-zero for failure
+    for (int i = 0; i < num_files; i++) {
+        FILE* infile = fopen(input_files[i], "r");
+        if (!infile) {
+            perror("Error opening input file");
+            fclose(outfile);
+            return -1;
         }
+
+        char buffer[1024];
+        while (fgets(buffer, sizeof(buffer), infile)) {
+            fputs(buffer, outfile);
+        }
+
+        fclose(infile);
     }
 
-    // Close both files
-    fclose(source_file);
-    fclose(destination_file);
-
-    printf("File \"%s\" copied to \"%s\" successfully.\n", source, destination);
-    return 0;  // Return zero for success
+    fclose(outfile);
+    return 0;
 }
 
 int move_file(const char* source, const char* destination) {
-    int status = rename(source, destination);
-
-    if (status == 0) {
-        printf("File \"%s\" moved/renamed to \"%s\" successfully.\n", source, destination);
-        return 0;  // Return zero for success
-    } else {
-        perror("Error moving/renaming file");
-        return 1;  // Return non-zero for failure
+    if (rename(source, destination) != 0) {
+        perror("Error moving file");
+        return -1;
     }
+    return 0;
 }
-

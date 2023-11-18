@@ -1,98 +1,54 @@
-// main.c
+
+// src/main.c
+
 #include <stdio.h>
 #include <string.h>
 #include "display.h"
 #include "file_operations.h"
-#include "search_and_compression.h"
+#include "search.h"
+#include "compression.h"
+#include "permissions.h"
+// #include "utils.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char **argv) {
+    // Check if any arguments are provided
     if (argc < 2) {
         printf("Error: No command switch provided. Use -h for help.\n");
         return 1;
     }
 
-    char* operation = argv[1];
-
-    if (strcmp(operation, "-h") == 0) {
-        // Operation 1: Display the help menu
+    // Handle command switches
+    if (strcmp(argv[1], "-h") == 0) {
         display_help();
-    } else if (strcmp(operation, "-p") == 0) {
-        // Operation 2: Print the contents of a file
-        if (argc < 3) {
-            printf("Error: No filename provided.\n");
-            return 1;
-        }
-        const char* filename = argv[2];
-        // Call function to print file contents
-        // Example: print_file_content(filename);
-    } else if (strcmp(operation, "-s") == 0) {
-        // Operation 3: Search a file for a string
-        if (argc < 4) {
-            printf("Error: No search term or filename provided.\n");
-            return 1;
-        }
-        const char* search_term = argv[2];
-        const char* filename = argv[3];
-        // Call function to search for a string in a file
-        // Example: search_files(filename, search_term);
-    } else if (strcmp(operation, "-z") == 0) {
-        // Operation 4: Print the size of a file
-        if (argc < 3) {
-            printf("Error: No filename provided.\n");
-            return 1;
-        }
-        const char* filename = argv[2];
-        // Call function to print the size of a file
-        // Example: print_file_size(filename);
-    } else if (strcmp(operation, "-m") == 0) {
-        // Operation 5: Merge multiple files
-        if (argc < 4) {
-            printf("Error: No output or input files provided.\n");
-            return 1;
-        }
-        const char* output_file = argv[2];
-        // Call function to merge files
-        // Example: merge_files(output_file, argv + 3, argc - 3);
-    } else if (strcmp(operation, "-c") == 0) {
-        // Operation 6: Compress a file into .goat format
-        if (argc < 3) {
-            printf("Error: No filename provided.\n");
-            return 1;
-        }
-        const char* filename = argv[2];
-        // Call function to compress a file
-        // Example: compress_goat(filename);
-    } else if (strcmp(operation, "-d") == 0) {
-        // Operation 7: Decompress a .goat file
-        if (argc < 3) {
-            printf("Error: No filename provided.\n");
-            return 1;
-        }
-        const char* filename = argv[2];
-        // Call function to decompress a .goat file
-        // Example: decompress_goat(filename);
-    } else if (strcmp(operation, "-r") == 0) {
-        // Operation 8: Print file permissions
-        if (argc < 3) {
-            printf("Error: No filename provided.\n");
-            return 1;
-        }
-        const char* filename = argv[2];
-        // Call function to print file permissions
-        // Example: print_file_permissions(filename);
-    } else if (strcmp(operation, "-v") == 0) {
-        // Operation 9: Move or rename a file
-        if (argc < 4) {
-            printf("Error: No source or destination provided.\n");
-            return 1;
-        }
-        const char* source = argv[2];
-        const char* destination = argv[3];
-        // Call function to move or rename a file
-        // Example: move_or_rename_file(source, destination);
-    } else {
-        printf("Error: Unrecognized command switch: %s. Use -h for help.\n", operation);
-        return 1;
+    }
+    else if (strcmp(argv[1], "-p") == 0 && argc == 3) {
+        print_file_content(argv[2]);
+    }
+    else if (strcmp(argv[1], "-s") == 0 && argc == 4) {
+        search_files(argv[2], argv[3]);
+    }
+    else if (strcmp(argv[1], "-z") == 0 && argc == 3) {
+        print_size(argv[2]);  // Print the size of the file specified in bytes
+    }
+    else if (strcmp(argv[1], "-m") == 0 && argc > 3) {
+        if (merge_file(argv[2], argc - 3, (const char**)&argv[3]) == 0) printf("Files merged successfully.\n");
+        else printf("Error merging files.\n");
+    }
+    else if (strcmp(argv[1], "-c") == 0 && argc == 3) {
+        compress_goat(argv[2]);
+    }
+    else if (strcmp(argv[1], "-d") == 0 && argc == 3) {
+        decompress_goat(argv[2]);
+    }
+    else if (strcmp(argv[1], "-r") == 0 && argc == 3) {
+        print_file_permissions(argv[2]);
+    }
+    else if (strcmp(argv[1], "-v") == 0 && argc == 4) {
+        if (move_file(argv[2], argv[3])) printf("File moved/renamed successfully.\n");
+        else printf("Error moving/renaming file.\n");
+    }
+    else {
+        printf("Error: Invalid command switch or missing arguments. Use -h for help.\n");
     }
 
     return 0;

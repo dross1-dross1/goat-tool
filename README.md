@@ -8,6 +8,16 @@
 
 ---
 
+**How to Install**
+1. Clone the repository `git clone https://github.com/dross1-dross1/goat-tool.git`
+2. CD into the directory `cd goat-tool/`
+3. Run the Makefile `make`
+4. You're done! Use GoatTool by running (in only this directory) `./bin/goattool [--flag] (args)`
+5. (Optional) Compile the tests file `gcc -o test_executable tests/tests.c src/display.c src/file_operations.c src/search.c src/compression.c src/permissions.c src/utils.c -Iinclude`
+6. (Optional) Run the tests file `./test_executable`
+
+---
+
 ## Table of Contents
 0. [Project File Structure](#project-file-structure)
 1. [Introduction](#introduction)

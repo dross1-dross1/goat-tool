@@ -351,7 +351,7 @@ File decompressed to example.txt
 
 ---
 
-**Default Case (No switch provided)**
+**Default Case (No switch provided or invalid switch provided)**
 1. Input: `./goattool`
    Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
 

@@ -8,7 +8,7 @@
 
 ---
 
-**How to Install**
+**How to Install (For Unix/Linux-Based OSes)**
 1. Clone the repository `git clone https://github.com/dross1-dross1/goat-tool.git`
 2. CD into the directory `cd goat-tool/`
 3. Run the Makefile `make`

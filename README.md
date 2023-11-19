@@ -48,17 +48,16 @@ GoatTool/
 │   ├── permissions.h
 │   └── utils.h
 │
-├── doc/                          # Documentation directory
-│   ├── DESIGN.md                 # Design document as per the project requirement
-│   └── USAGE.md                  # Extended usage guide based on the provided documentation
-│
 ├── tests/                        # Unit tests (if any are written)
-│   ├── test_file_operations.c   
-│   ├── test_search.c
-│   └── ...
+│   ├── tests.c
+│   ├── example_file.txt
+│   ├── file1.txt
+│   ├── file2.txt
+│   ├── source.txt
+│   └── locked_file.txt
 │
 └── assets/                       # Any additional assets like images for README or design diagrams
-    └── logo.png                  # An example logo for GoatTool (if you have one)
+    └── function_call_diagram.png
 ```
 
 ---
@@ -132,187 +131,71 @@ File decompressed to example.txt
 - **Return Value:** None.
 - **Side Effects:** Outputs help information to the console.
 
-### `int create_file(const char* filename)`
-- **Description:** Creates a new file.
+### `void print_file_content(const char* filename)`
+- **Description:** Print the content of a given file. Handles errors such as non-existent files, directories, and permission issues.
 - **Parameters:**
-  - `filename`: Name of the file to create.
-- **Return Value:** 0 for success, non-zero for failure.
-- **Side Effects:** Generates a new file in the file system.
+  - `filename`: Name of the file to print.
+- **Return Value:** None.
+- **Side Effects:** Outputs file content to the console or error messages.
 
-### `int delete_file(const char* filename)`
-- **Description:** Deletes a specified file.
+### `void print_size(const char* filename)`
+- **Description:** Print the size of the specified file in bytes. Handles directories and access issues.
 - **Parameters:**
-  - `filename`: Name of the file to delete.
-- **Return Value:** 0 for success, non-zero for failure.
-- **Side Effects:** Removes the chosen file from the system.
+  - `filename`: Name of the file to get the size of.
+- **Return Value:** None.
+- **Side Effects:** Outputs file size to the console or error messages.
 
-### `int copy_file(const char* source, const char* destination)`
-- **Description:** Copies a file from the source to the destination.
+### `int merge_file(const char* output_file, int num_files, const char** input_files)`
+- **Description:** Merge multiple files into one output file. Handles errors such as missing input files or access issues.
 - **Parameters:**
-  - `source`: Path to the source file.
-  - `destination`: Path to the destination file.
+  - `output_file`: Name of the output file.
+  - `num_files`: Number of input files.
+  - `input_files`: Array of input file names.
 - **Return Value:** 0 for success, non-zero for failure.
-- **Side Effects:** Duplicates the source file at the destination path.
+- **Side Effects:** Merges files and outputs status messages.
 
 ### `int move_file(const char* source, const char* destination)`
-- **Description:** Moves or renames a file.
+- **Description:** Moves or renames a file. Handles errors such as non-existent source file and access issues.
 - **Parameters:**
   - `source`: Path to the source file.
   - `destination`: Path to the destination or new name.
 - **Return Value:** 0 for success, non-zero for failure.
-- **Side Effects:** Transfers or renames the source file.
+- **Side Effects:** Moves or renames the file and outputs status messages.
 
-### `void list_directory(const char* directory)`
-- **Description:** Lists a directory's contents.
+### `int search_files(const char* filename, const char* search_term)`
+- **Description:** Searches for a string within a file and prints lines containing that string. Handles errors such as non-existent files.
 - **Parameters:**
-  - `directory`: Path to the directory.
-- **Return Value:** None.
-- **Side Effects:** Outputs directory contents to the console.
-
-### `int search_files(const char* directory, const char* query)`
-- **Description:** Searches for files matching a query.
-- **Parameters:**
-  - `directory`: Directory path for the search.
-  - `query`: Search term.
-- **Return Value:** Number of matching files.
-- **Side Effects:** Outputs details of matching files.
-
-### `int encrypt_file(const char* filename, const char* password)`
-- **Description:** Encrypts a file.
-- **Parameters:**
-  - `filename`: File to encrypt.
-  - `password`: Encryption password.
-- **Return Value:** 0 for success, non-zero for failure.
-- **Side Effects:** Encrypts the specified file.
-
-### `void print_file_content(const char* filename)`
-- **Description:** Print the content of the given file.
-- **Parameters:**
-  - `filename`: Name of the file to print.
-- **Return Value:** None.
-- **Side Effects:** Outputs file content to the console.
+  - `filename`: File to search in.
+  - `search_term`: String to search for.
+- **Return Value:** Number of matches found.
+- **Side Effects:** Outputs details of matching lines or error messages.
 
 ### `int compress_goat(const char* filename)`
-- **Description:** Compress a file into .goat format.
+- **Description:** Compress a file into .goat format using a custom compression algorithm. Handles errors such as file access issues.
 - **Parameters:**
   - `filename`: File to compress.
 - **Return Value:** 0 for success, non-zero for failure.
-- **Side Effects:** Generates a compressed .goat file.
+- **Side Effects:** Generates a compressed .goat file and outputs status messages.
 
 ### `int decompress_goat(const char* filename)`
-- **Description:** Decompress a .goat file to its original content.
+- **Description:** Decompress a .goat file to its original content using a custom decompression algorithm. Handles errors such as file access issues.
 - **Parameters:**
   - `filename`: .goat file to decompress.
 - **Return Value:** 0 for success, non-zero for failure.
-- **Side Effects:** Generates the original file from the .goat format.
+- **Side Effects:** Generates the original file from the .goat format and outputs status messages.
 
 ### `void print_file_permissions(const char* filename)`
-- **Description:** Print the file permissions as an integer.
+- **Description:** Print the file permissions as an octal integer. Handles errors such as non-existent files and permission issues.
 - **Parameters:**
   - `filename`: File whose permissions are to be printed.
 - **Return Value:** None.
-- **Side Effects:** Outputs file permissions to the console.
+- **Side Effects:** Outputs file permissions to the console or error messages.
 
 ---
 
 ## Function Call Graph
 
-Note: The accuracy of the call graph highly depends on the actual implementation details in the source code. The revised call graph is based on assumptions made from the provided context. If the complete source code or a more detailed description is provided, a more accurate call graph can be constructed.
 
-### main (driver function)
-- **Parameters:**
-    - int argc
-    - char* argv[]
-- **Local Variables:**
-    - (To be determined from main.c)
-- **Calls:**
-    - display_help
-    - create_file
-    - delete_file
-    - copy_file
-    - move_file
-    - list_directory
-    - search_files
-    - encrypt_file
-    - print_file_content
-    - compress_goat
-    - decompress_goat
-    - print_file_permissions
-
-### display_help
-- **Parameters:** None.
-- **Local Variables:** None.
-- **Calls:** None.
-
-### create_file
-- **Parameters:**
-    - const char* filename
-- **Local Variables:** None.
-- **Calls:** None.
-
-### delete_file
-- **Parameters:**
-    - const char* filename
-- **Local Variables:** None.
-- **Calls:** None.
-
-### copy_file
-- **Parameters:**
-    - const char* source
-    - const char* destination
-- **Local Variables:** None.
-- **Calls:** None.
-
-### move_file
-- **Parameters:**
-    - const char* source
-    - const char* destination
-- **Local Variables:** None.
-- **Calls:** None.
-
-### list_directory
-- **Parameters:**
-    - const char* directory
-- **Local Variables:** None.
-- **Calls:** None.
-
-### search_files
-- **Parameters:**
-    - const char* directory
-    - const char* query
-- **Local Variables:** None.
-- **Calls:** None.
-
-### encrypt_file (added based on context)
-- **Parameters:**
-    - const char* filename
-    - const char* password
-- **Local Variables:** None.
-- **Calls:** None.
-
-### print_file_content
-- **Parameters:**
-    - const char* filename
-- **Local Variables:** None.
-- **Calls:** None.
-
-### compress_goat
-- **Parameters:**
-    - const char* filename
-- **Local Variables:** None.
-- **Calls:** None.
-
-### decompress_goat
-- **Parameters:**
-    - const char* filename
-- **Local Variables:** None.
-- **Calls:** None.
-
-### print_file_permissions
-- **Parameters:**
-    - const char* filename
-- **Local Variables:** None.
-- **Calls:** None.
 
 ---
 
@@ -434,7 +317,7 @@ Note: The accuracy of the call graph highly depends on the actual implementation
 
 **Operation 8: `-r [FILENAME]` (Print file permissions)**
 1. Input: `./goattool -r example_file.txt`
-   Expected Output: "Permissions: -rw-r--r--."
+   Expected Output: "Permissions: 664."
 
 2. Input: `./goattool -r`
    Expected Output: "Error: No filename provided."
@@ -443,10 +326,10 @@ Note: The accuracy of the call graph highly depends on the actual implementation
    Expected Output: "Error: File does not exist."
 
 4. Input: `./goattool -r locked_file.txt`
-   Expected Output: "Permissions: ---------."
+   Expected Output: "Permissions: 000."
 
 5. Input: `./goattool -r directory_name`
-   Expected Output: "Permissions: drwxr-xr-x."
+   Expected Output: "Permissions: 775."
 
 ---
 
@@ -470,7 +353,7 @@ Note: The accuracy of the call graph highly depends on the actual implementation
 
 **Default Case (No switch provided)**
 1. Input: `./goattool`
-   Expected Output: "Error: No command switch provided. Use -h for help."
+   Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
 
 ---
 
@@ -482,6 +365,7 @@ It has multiple lines.
 And it is used for testing purposes.
 Make sure you have fun testing!
 This is a line with search_term.
+aaaaabbbb cccdde
 ```
 
 2. **file1.txt**:

@@ -44,3 +44,12 @@
 # Exclude all subdirectories named Debug or Release
 Debug/
 Release/
+
+# Generated directories in Makefile
+obj/
+bin/
+
+# KDevelop specific directories
+.kdev4/
+.build/
+

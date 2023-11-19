@@ -1,0 +1,1 @@
+This is a source text meant to be moved to a destination.

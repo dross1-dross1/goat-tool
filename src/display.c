@@ -16,5 +16,4 @@ void display_help() {
     printf("-d [FILENAME] : Decompress a .goat file.\n");
     printf("-r [FILENAME] : Print file permissions.\n");
     printf("-v [SOURCE] [DESTINATION] : Move or rename a file.\n");
-    printf("\nFor more information, refer to the USAGE.md document.\n");
 }

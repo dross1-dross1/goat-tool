@@ -5,28 +5,33 @@
 #include <stdlib.h>
 #include <string.h>
 #include "search.h"
+#include "utils.h"
 
-void search_files(const char* filename, const char* search_term) {
-    FILE *file = fopen(filename, "r");
+int search_files(const char* filename, const char* search_term) {
+    // Check for missing filename or search term
+    if (!filename || !search_term) {
+        printf("Error: No search term or filename provided.\n");
+        return -1;
+    }
+
+    FILE *file = open_file(filename, "r");
     if (file == NULL) {
-        perror("Error opening file");
-        return;
+        printf("Error: File does not exist.\n");
+        return -1;
     }
 
     char buffer[1024];
-    int line_number = 1;
-    int found = 0;
-    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+    int line_number = 1, match_count = 0;
+    while (read_line(file, buffer, sizeof(buffer))) {
         if (strstr(buffer, search_term) != NULL) {
             printf("Line %d: %s", line_number, buffer);
-            found = 1;
+            match_count++;
         }
         line_number++;
     }
 
-    if (!found) {
-        printf("No matches found.\n");
-    }
+    if (match_count == 0) printf("No matches found for '%s'.\n", search_term);
 
     fclose(file);
+    return match_count;
 }

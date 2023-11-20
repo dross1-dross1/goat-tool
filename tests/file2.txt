@@ -1,0 +1,2 @@
+This is the second file.
+Merged content goes below the first file's content.

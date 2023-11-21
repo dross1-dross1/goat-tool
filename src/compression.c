@@ -72,8 +72,8 @@ void* decompress_line(void* arg) {
     return NULL;
 }
 
-int process_file(const char* filename, const char* outputFilename, void* (*process_line)(void*)) {
-    if (!filename || !outputFilename) {
+int process_file(const char* filename, const char* output_filename, void* (*process_line)(void*)) {
+    if (!filename || !output_filename) {
         printf("Error: Invalid filename provided.\n");
         return -1;
     }
@@ -81,7 +81,7 @@ int process_file(const char* filename, const char* outputFilename, void* (*proce
     FILE* file = open_file(filename, "r");
     if (!file) return -1;
 
-    FILE* outFile = open_file(outputFilename, "w");
+    FILE* outFile = open_file(output_filename, "w");
     if (!outFile) {
         fclose(file);
         return -1;
@@ -114,19 +114,19 @@ int process_file(const char* filename, const char* outputFilename, void* (*proce
 
     fclose(file);
     fclose(outFile);
-    printf("File processed to %s.\n", outputFilename);
+    printf("File processed to %s.\n", output_filename);
 
     return 0;
 }
 
 int compress_goat(const char* filename) {
-    char outputFilename[256];
-    snprintf(outputFilename, sizeof(outputFilename), "%s.goat", filename);
-    return process_file(filename, outputFilename, compress_line);
+    char output_filename[256];
+    snprintf(output_filename, sizeof(output_filename), "%s.goat", filename);
+    return process_file(filename, output_filename, compress_line);
 }
 
 int decompress_goat(const char* filename) {
-    char outputFilename[256];
-    snprintf(outputFilename, sizeof(outputFilename), "%s.decompressed", filename);
-    return process_file(filename, outputFilename, decompress_line);
+    char output_filename[256];
+    snprintf(output_filename, sizeof(output_filename), "%s.decompressed", filename);
+    return process_file(filename, output_filename, decompress_line);
 }

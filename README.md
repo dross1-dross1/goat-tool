@@ -1,5 +1,7 @@
 # Goat Tool
 
+Convert `.md` to `.pdf` using [md-to-pdf](https://md-to-pdf.fly.dev/)
+
 ## Authors
 - Deautaun Ross
 - Jaret Smith

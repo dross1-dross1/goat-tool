@@ -414,11 +414,11 @@ a18b4 c3d2e1"
     # Default Case (No switch provided or invalid switch provided)
     printMsg 1 "[] Test case: No arguments provided"
     runTest "$BINARY" \
-"Error: Insuffecient argument count. Use -h for help."
+"Error: Insufficient argument count. Use -h for help."
 
     printMsg 1 "[-e] Test case: Invalid switch provided"
     runTest "$BINARY" \
-"Error: Insuffecient argument count. Use -h for help."
+"Error: Insufficient argument count. Use -h for help."
 
     printMsg 1 "[] Test case: No switch provided but arguments exist"
     runTest "$BINARY $FILE1 $FILE2" \

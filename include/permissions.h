@@ -12,11 +12,15 @@
  * If the file does not exist or cannot be accessed due to permissions, an error message
  * is printed. If no filename is provided, an error is also printed.
  *
+ * The function returns 0 on success or -1 in case of an error, along with an appropriate
+ * error message.
+ *
  * Example output: "Permissions for 'example.txt': 0644"
  *
  * @param filename The path of the file whose permissions are to be printed.
  *                 If NULL or empty, an error message is printed.
+ * @return 0 on success, -1 on error.
  */
-void print_file_permissions(const char* filename);
+int print_file_permissions(const char* filename);
 
 #endif // PERMISSIONS_H

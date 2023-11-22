@@ -10,11 +10,8 @@
 
 char* compress_string(const char* str) {
     if (str == NULL) return NULL;
-
-    // Allocate memory for the compressed string
     char* compressed = malloc(2 * strlen(str) + 1);
     if (compressed == NULL) return NULL;
-
     int count = 1;
     int j = 0;
     for (int i = 0; str[i] != '\0'; i++) {
@@ -25,32 +22,27 @@ char* compress_string(const char* str) {
             count = 1;
         }
     }
-
     compressed[j] = '\0';
     return compressed;
 }
 
 char* decompress_string(const char* str) {
     if (str == NULL) return NULL;
-
-    // Allocate memory for the decompressed string
-    char* decompressed = malloc(strlen(str) + 1);
+    char* decompressed = malloc(4 * strlen(str) + 1);
     if (decompressed == NULL) return NULL;
-
     int count;
     int j = 0;
     for (int i = 0; str[i] != '\0'; ) {
         if (isalpha(str[i]) && isdigit(str[i + 1])) {
-            // Read the count after the character
             sscanf(&str[i + 1], "%d", &count);
-            for (int k = 0; k < count; k++) decompressed[j++] = str[i];
-
-            // Move the index i past the digits
+            for (int k = 0; k < count; k++, j++) {
+                if (j >= 10 * strlen(str)) break;
+                decompressed[j] = str[i];
+            }
             while (isdigit(str[i + 1])) i++;
         } else decompressed[j++] = str[i];
         i++;
     }
-
     decompressed[j] = '\0';
     return decompressed;
 }
@@ -73,49 +65,35 @@ void* decompress_line(void* arg) {
 }
 
 int process_file(const char* filename, const char* output_filename, void* (*process_line)(void*)) {
-    if (!filename || !output_filename) {
-        printf("Error: Invalid filename provided.\n");
-        return -1;
-    }
-
     FILE* file = open_file(filename, "r");
     if (!file) return -1;
-
     FILE* outFile = open_file(output_filename, "w");
     if (!outFile) {
         fclose(file);
         return -1;
     }
-
     char buffer[1024];
     long line_num = 0;
-    pthread_t threads[1024];  // Adjust thread array size as needed
-    LineData line_data[1024]; // Adjust line data array size as needed
-
+    pthread_t threads[1024];
+    LineData line_data[1024];
     while (read_line(file, buffer, sizeof(buffer))) {
         line_data[line_num].line = strdup(buffer);
         line_data[line_num].line_num = line_num;
         pthread_create(&threads[line_num], NULL, process_line, &line_data[line_num]);
         line_num++;
-
-        // Check for max thread count
         if (line_num >= 1024) {
             printf("Error: Maximum thread count exceeded.\n");
             break;
         }
     }
-
-    // Join threads and write output in order
     for (long i = 0; i < line_num; i++) {
         pthread_join(threads[i], NULL);
         fputs(line_data[i].line, outFile);
         free(line_data[i].line);
     }
-
     fclose(file);
     fclose(outFile);
     printf("File processed to %s.\n", output_filename);
-
     return 0;
 }
 

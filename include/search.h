@@ -15,10 +15,10 @@
  * If the file does not exist, cannot be opened, or if either the `filename` or `search_term`
  * is missing, appropriate error messages are displayed.
  *
- * @param filename The path to the file in which to search.
  * @param search_term The term to search for within the file.
+ * @param filename The path to the file in which to search.
  * @return The number of lines where the `search_term` is found, or -1 in case of an error.
  */
-int search_files(const char* filename, const char* search_term);
+int search_files(const char* search_term, const char* filename);
 
 #endif // SEARCH_H

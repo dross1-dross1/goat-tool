@@ -4,16 +4,20 @@
 #ifndef FILE_OPERATIONS_H
 #define FILE_OPERATIONS_H
 
+#include <stdio.h>
+
 /**
- * @brief Prints the content of a specified file to the console.
+ * @brief Prints the content of specified files to the console.
  *
- * This function reads the content from the file specified by `filename`
- * and prints it to the console. It checks for file existence and whether
- * the file is a directory.
+ * This function reads the content from each file specified in the `filenames`
+ * array and prints it to the console. It checks for file existence and whether
+ * each file is a directory. The function iterates through the number of files
+ * specified by `num_files`.
  *
- * @param filename The path to the file.
+ * @param num_files The number of files to print.
+ * @param filenames The array of paths to the files.
  */
-void print_file_content(const char* filename);
+void print_file_content(int num_files, const char** filenames);
 
 /**
  * @brief Prints the size of a specified file in bytes.

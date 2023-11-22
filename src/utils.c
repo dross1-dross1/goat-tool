@@ -7,9 +7,24 @@
 #include <sys/stat.h>
 #include <errno.h>
 
+void print_error(const char* message) {
+    switch (errno) {
+        case ENOENT:
+            printf("Error: File does not exist.\n");
+            break;
+        case EACCES:
+        case EPERM:
+            printf("Error: Permission denied.\n");
+            break;
+        default:
+            perror(message);
+            break;
+    }
+}
+
 FILE* open_file(const char* filename, const char* mode) {
     FILE* file = fopen(filename, mode);
-    if (!file) perror("Error opening file");
+    if (!file) print_error("Error opening file");
     return file;
 }
 
@@ -35,18 +50,4 @@ int is_directory(const char* filename) {
     struct stat buffer;
     if (stat(filename, &buffer) != 0) return -1;
     return S_ISDIR(buffer.st_mode);
-}
-
-void print_error(const char* message) {
-    switch (errno) {
-        case ENOENT:
-            printf("Error: File does not exist.\n");
-            break;
-        case EACCES:
-        case EPERM:
-            printf("Error: Permission denied.\n");
-            break;
-        default:
-            perror(message);
-    }
 }

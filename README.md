@@ -13,8 +13,7 @@
 2. CD into the directory `cd goat-tool/`
 3. Run the Makefile `make`
 4. You're done! Use GoatTool by running (in only this directory) `./bin/goattool [--flag] (args)`
-5. (Optional) Compile the tests file `gcc -o test_executable tests/tests.c src/display.c src/file_operations.c src/search.c src/compression.c src/permissions.c src/utils.c -Iinclude`
-6. (Optional) Run the tests file `./test_executable`
+5. (Optional) Run the test script `./tests.sh`
 
 ---
 
@@ -35,22 +34,24 @@
 ```
 GoatTool/
 │
-├── README.md                     # Overview of the tool, how to install and basic usage
+├── README.md
 │
-├── .gitignore                    # Git ignore file to exclude unnecessary files
+├── .gitignore
 │
-├── Makefile                      # Used for compilation and possibly testing
+├── Makefile
 │
-├── src/                          # Contains the source code files
-│   ├── main.c                    # Entry point for the GoatTool
-│   ├── display.c                 # Contains functions related to displaying data (like `display_help`)
-│   ├── file_operations.c         # Contains file related operations (create, delete, copy, move etc.)
-│   ├── search.c                  # Contains functions related to file searching (`search_files`)
-│   ├── compression.c             # Handles .goat compression & decompression (`compress_goat`, `decompress_goat`)
-│   ├── permissions.c             # Related to file permissions (`print_file_permissions`)
-│   └── utils.c                   # Miscellaneous utility functions (could be error handling, string manipulations, etc.)
+├── tests.sh
 │
-├── include/                      # Contains header files corresponding to source files
+├── src/
+│   ├── main.c
+│   ├── display.c
+│   ├── file_operations.c
+│   ├── search.c
+│   ├── compression.c
+│   ├── permissions.c
+│   └── utils.c
+│
+├── include/
 │   ├── display.h                 
 │   ├── file_operations.h
 │   ├── search.h
@@ -58,16 +59,19 @@ GoatTool/
 │   ├── permissions.h
 │   └── utils.h
 │
-├── tests/                        # Unit tests (if any are written)
-│   ├── tests.c
+├── test_files/
 │   ├── example_file.txt
 │   ├── file1.txt
 │   ├── file2.txt
-│   ├── source.txt
-│   └── locked_file.txt
+│   ├── empty_file.txt
+│   ├── special@file#.txt
+│   ├── locked_file.txt
+│   ├── locked_file.txt.goat
+│   └── locked_file.txt.goat.decompressed
 │
-└── assets/                       # Any additional assets like images for README or design diagrams
-    └── function_call_diagram.png
+└── assets/
+    ├── function_call_diagram.png
+    └── function_call_diagram.drawio
 ```
 
 ---
@@ -235,7 +239,7 @@ File decompressed to example.txt
 
 ---
 
-**Operation 3: `-s [FILENAME]` (Search a file for a string)**
+**Operation 3: `-s [SEARCH_TERM] [FILENAME]` (Search a file for a string)**
 1. Input: `./goattool -s "search_term" example_file.txt`
    Expected Output: "Line 5: This is a line with search_term."
 
@@ -375,7 +379,7 @@ It has multiple lines.
 And it is used for testing purposes.
 Make sure you have fun testing!
 This is a line with search_term.
-aaaaabbbb cccdde
+aaaaaaaaaaaaaaaaaabbbb cccdde
 ```
 
 2. **file1.txt**:
@@ -390,8 +394,32 @@ This is the second file.
 Merged content goes below the first file's content.
 ```
 
-4. **locked_file.txt**: 
+4. **special@file#.txt**:
+```
+#!m @ $p[-c!@| /=!|[-
+```
+
+5. **empty_file.txt**:
+```
+```
+
+6. **locked_file.txt**: 
 (Note: This file is locked or has permissions set to disallow reading. Contents cannot be displayed.)
+```
+You shouldn't be seeing this, as this file is locked.
+```
+
+7. **locked_file.txt.goat**
+(Note: This file is locked or has permissions set to disallow reading. Contents cannot be displayed.)
+```
+Y1o1u1 s1h1o1u1l1d1n1't1 b1e1 s1e2i1n1g1 t1h1i1s1, a1s1 t1h1i1s1 f1i1l1e1 i1s1 l1o1c1k1e1d1.
+```
+
+8. **locked_file.txt.goat.decompressed**
+(Note: This file is locked or has permissions set to disallow reading. Contents cannot be displayed.)
+```
+You shouldn't be seeing this, as this file is locked.
+```
 
 ---
 

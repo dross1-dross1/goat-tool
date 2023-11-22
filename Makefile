@@ -2,7 +2,7 @@
 CC = gcc
 
 # Define any compile-time flags. Here, we include the headers located in the 'include' directory
-CFLAGS = -Iinclude
+CFLAGS = -Iinclude -Wall
 
 # Define the source directory and object file directory
 SRCDIR = src

@@ -33,8 +33,9 @@ char* compress_string(const char* str) {
 char* decompress_string(const char* str) {
     if (str == NULL) return NULL;
 
-    // Allocate memory for the decompressed string
-    char* decompressed = malloc(strlen(str) + 1);
+    // Estimate the maximum size needed for the decompressed string.
+    // As a conservative estimate, use 10 times the length of the compressed string.
+    char* decompressed = malloc(10 * strlen(str) + 1);
     if (decompressed == NULL) return NULL;
 
     int count;
@@ -43,7 +44,10 @@ char* decompress_string(const char* str) {
         if (isalpha(str[i]) && isdigit(str[i + 1])) {
             // Read the count after the character
             sscanf(&str[i + 1], "%d", &count);
-            for (int k = 0; k < count; k++) decompressed[j++] = str[i];
+            for (int k = 0; k < count; k++, j++) {
+                if (j >= 10 * strlen(str)) break;
+                decompressed[j] = str[i];
+            }
 
             // Move the index i past the digits
             while (isdigit(str[i + 1])) i++;
@@ -54,6 +58,7 @@ char* decompress_string(const char* str) {
     decompressed[j] = '\0';
     return decompressed;
 }
+
 
 typedef struct {
     char* line;
@@ -120,12 +125,42 @@ int process_file(const char* filename, const char* output_filename, void* (*proc
 }
 
 int compress_goat(const char* filename) {
+    if (!filename) {
+        printf("Error: Invalid filename provided.\n");
+        return -1;
+    }
+
+    if (!file_exists(filename)) {
+        printf("Error: File does not exist.\n");
+        return -1;
+    }
+
+    if (is_directory(filename)) {
+        printf("Error: Cannot compress a directory.\n");
+        return -1;
+    }
+
     char output_filename[256];
     snprintf(output_filename, sizeof(output_filename), "%s.goat", filename);
     return process_file(filename, output_filename, compress_line);
 }
 
 int decompress_goat(const char* filename) {
+    if (!filename) {
+        printf("Error: Invalid filename provided.\n");
+        return -1;
+    }
+
+    if (!file_exists(filename)) {
+        printf("Error: File does not exist.\n");
+        return -1;
+    }
+
+    if (is_directory(filename)) {
+        printf("Error: Cannot decompress a directory.\n");
+        return -1;
+    }
+
     char output_filename[256];
     snprintf(output_filename, sizeof(output_filename), "%s.decompressed", filename);
     return process_file(filename, output_filename, decompress_line);

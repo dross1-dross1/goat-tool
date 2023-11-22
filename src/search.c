@@ -7,7 +7,7 @@
 #include "search.h"
 #include "utils.h"
 
-int search_files(const char* filename, const char* search_term) {
+int search_files(const char* search_term, const char* filename) {
     // Check for missing filename or search term
     if (!filename || !search_term) {
         printf("Error: No search term or filename provided.\n");
@@ -15,10 +15,7 @@ int search_files(const char* filename, const char* search_term) {
     }
 
     FILE *file = open_file(filename, "r");
-    if (file == NULL) {
-        printf("Error: File does not exist.\n");
-        return -1;
-    }
+    if (!file) return -1;
 
     char buffer[1024];
     int line_number = 1, match_count = 0;

@@ -67,8 +67,8 @@ void* decompress_line(void* arg) {
 int process_file(const char* filename, const char* output_filename, void* (*process_line)(void*)) {
     FILE* file = open_file(filename, "r");
     if (!file) return -1;
-    FILE* outFile = open_file(output_filename, "w");
-    if (!outFile) {
+    FILE* out_file = open_file(output_filename, "w");
+    if (!out_file) {
         fclose(file);
         return -1;
     }
@@ -88,11 +88,11 @@ int process_file(const char* filename, const char* output_filename, void* (*proc
     }
     for (long i = 0; i < line_num; i++) {
         pthread_join(threads[i], NULL);
-        fputs(line_data[i].line, outFile);
+        fputs(line_data[i].line, out_file);
         free(line_data[i].line);
     }
     fclose(file);
-    fclose(outFile);
+    fclose(out_file);
     printf("File processed to %s.\n", output_filename);
     return 0;
 }

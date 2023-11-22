@@ -9,7 +9,7 @@
 #include "compression.h"
 #include "permissions.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     if (argc < 2) {
         printf("Error: Insuffecient argument count. Use -h for help.\n");
         return -1;

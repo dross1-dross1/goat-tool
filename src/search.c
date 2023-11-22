@@ -8,7 +8,7 @@
 #include "utils.h"
 
 int search_files(const char* search_term, const char* filename) {
-    FILE *file = open_file(filename, "r");
+    FILE* file = open_file(filename, "r");
     if (!file) return -1;
     char buffer[1024];
     int line_number = 1, match_count = 0;

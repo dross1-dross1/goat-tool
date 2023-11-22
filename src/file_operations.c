@@ -7,7 +7,7 @@
 int print_file_content(int num_files, const char** filenames) {
     for (int i = 0; i < num_files; i++) {
         const char* filename = filenames[i];
-        FILE *file = open_file(filename, "r");
+        FILE* file = open_file(filename, "r");
         if (!file) continue;
         printf("--- Content of '%s' ---\n", filename);
         char buffer[1024];

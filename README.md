@@ -9,11 +9,11 @@
 ---
 
 **How to Install (For Unix/Linux-Based OSes)**
-1. Clone the repository `git clone https://github.com/dross1-dross1/goat-tool.git`
-2. CD into the directory `cd goat-tool/`
-3. Run the Makefile `make`
+1. Clone the repository using `git clone https://github.com/dross1-dross1/goat-tool.git`
+2. CD into the directory using `cd goat-tool/`
+3. Compile and build the code with `make` or `./build.sh`
 4. You're done! Use GoatTool by running (in only this directory) `./bin/goattool [--flag] (args)`
-5. (Optional) Run the test script `./tests.sh`
+5. (Optional) Run the test script using `./tests.sh` (runs automatically if you compiled with `.build.sh`)
 
 ---
 
@@ -36,6 +36,8 @@
 ```
 GoatTool/
 │
+├── LICENSE
+│
 ├── README.md
 │
 ├── .gitignore
@@ -44,11 +46,7 @@ GoatTool/
 │
 ├── tests.sh
 │
-├── build_script_log.txt
-│
 ├── build.sh
-│
-├── tests.sh
 │
 ├── src/
 │   ├── main.c

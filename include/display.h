@@ -9,12 +9,11 @@
  *
  * This function prints out a list of available commands and their descriptions
  * for the GoatTool application. It is intended to guide users in understanding
- * how to use the different functionalities provided by the tool.
+ * how to use the different functionalities provided by the tool. The function
+ * prints the help information to the console.
  *
- * @param None
- * @return None
- * @side_effects Prints help information to the console.
+ * @return int Returns 0 upon successful execution.
  */
-void display_help();
+int display_help();
 
 #endif // DISPLAY_H

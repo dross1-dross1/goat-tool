@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "display.h"
 
-void display_help() {
+int display_help() {
     printf("GoatTool Help and Usage Instructions\n");
     printf("------------------------------------\n");
     printf("-h : Display this help menu.\n");
@@ -16,4 +16,5 @@ void display_help() {
     printf("-d [FILENAME] : Decompress a .goat file.\n");
     printf("-r [FILENAME] : Print file permissions.\n");
     printf("-v [SOURCE] [DESTINATION] : Move or rename a file.\n");
+    return 0;
 }

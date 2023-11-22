@@ -6,32 +6,7 @@
 
 #include <stdio.h>  // For FILE type
 #include <stdlib.h> // For size_t type
-
-/**
- * @brief Opens a file with the specified mode.
- *
- * Attempts to open a file with the given filename and mode (e.g., "r" for read,
- * "w" for write). If the file cannot be opened, an error message is printed.
- *
- * @param filename The path of the file to be opened.
- * @param mode The mode in which the file is to be opened.
- * @return A pointer to the opened FILE. Returns NULL if the file cannot be opened.
- */
-FILE* open_file(const char* filename, const char* mode);
-
-/**
- * @brief Safely concatenates two strings.
- *
- * Concatenates the source string to the destination string. Ensures that the
- * destination string does not get overrun by limiting the number of characters
- * copied from the source string.
- *
- * @param dest The destination string.
- * @param src The source string to append to the destination.
- * @param dest_size The total size of the destination buffer.
- * @return A pointer to the resulting string (destination).
- */
-char* safe_strcat(char* dest, const char* src, size_t dest_size);
+#include <sys/stat.h> // For struct stat
 
 /**
  * @brief Reads a line from the given file.
@@ -49,32 +24,41 @@ char* read_line(FILE* file, char* buffer, size_t buffer_size);
 /**
  * @brief Checks if a file exists.
  *
- * Determines whether a file exists at the given path.
+ * Checks the existence of a file with the specified filename.
  *
  * @param filename The path of the file to check.
- * @return Non-zero if the file exists, zero otherwise.
+ * @return 1 if the file exists, 0 otherwise.
  */
 int file_exists(const char* filename);
 
 /**
- * @brief Checks if a given path is a directory.
+ * @brief Checks if a given filename is a directory.
  *
- * Determines whether the given path corresponds to a directory.
+ * Determines if the specified filename is a directory.
  *
- * @param filename The path to be checked.
- * @return Non-zero if the path is a directory, zero if it is not,
- *         and -1 if the path does not exist or cannot be accessed.
+ * @param filename The path of the file to check.
+ * @return 1 if it's a directory, 0 if not, and -1 if an error occurs.
  */
 int is_directory(const char* filename);
 
 /**
- * @brief Prints an error message based on the global variable `errno`.
+ * @brief Prints an error message based on the global errno.
  *
- * If an error occurs during file operations, this function prints an appropriate
- * error message based on the value of `errno`.
- *
- * @param message A custom message to precede the error description.
+ * This function prints an error message corresponding to the current value
+ * of the global errno. It covers a range of common file-related errors.
  */
-void print_error(const char* message);
+void print_error();
+
+/**
+ * @brief Opens a file with the specified mode.
+ *
+ * Attempts to open a file with the given filename and mode (e.g., "r" for read,
+ * "w" for write). If the file cannot be opened, an error message is printed.
+ *
+ * @param filename The path of the file to be opened.
+ * @param mode The mode in which the file is to be opened.
+ * @return A pointer to the opened FILE. Returns NULL if the file cannot be opened.
+ */
+FILE* open_file(const char* filename, const char* mode);
 
 #endif // UTILS_H

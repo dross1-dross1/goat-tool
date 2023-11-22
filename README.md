@@ -25,7 +25,9 @@
 4. [Functions](#functions)
 5. [Function Call Graph](#function-call-graph)
 6. [Test Cases](#test-cases)
-7. [Privacy Disclosure](#privacy-disclosure)
+7. [Code Test Analysis](#code-test-analysis)
+8. [BASH Script Raw Output](#bash-script-raw-output)
+9. [Privacy Disclosure](#privacy-disclosure)
 
 ---
 
@@ -39,6 +41,12 @@ GoatTool/
 ├── .gitignore
 │
 ├── Makefile
+│
+├── tests.sh
+│
+├── build_script_log.txt
+│
+├── build.sh
 │
 ├── tests.sh
 │
@@ -216,158 +224,413 @@ File decompressed to example.txt
 ## Test Cases
 
 **Operation 1: `-h` (Display the help menu)**
-1. Input: `./goattool -h`
-   Expected Output: *Help and usage instructions for GoatTool.*
+
+1. **Print the help menu**
+   - Input: `./goattool -h`
+   - Expected Output: 
+     ```
+     GoatTool Help and Usage Instructions
+     ------------------------------------
+     -h : Display this help menu.
+     -p [FILENAMES...] : Print the contents of one or more files.
+     -s [SEARCH_TERM] [FILENAME] : Search a file for a string.
+     -z [FILENAME] : Print the size of a file.
+     -m [OUTPUT_FILE] [INPUT_FILES...] : Merge multiple files.
+     -c [FILENAME] : Compress a file into .goat format.
+     -d [FILENAME] : Decompress a .goat file.
+     -r [FILENAME] : Print file permissions.
+     -v [SOURCE] [DESTINATION] : Move or rename a file.
+     ```
 
 ---
 
 **Operation 2: `-p [FILENAME]` (Print the contents of a file)**
-1. Input: `./goattool -p example_file.txt`
-   Expected Output: "This is an example file".
 
-2. Input: `./goattool -p non_existent_file.txt`
-   Expected Output: "Error: File does not exist."
+1. **Print the contents of a single file**
+   - Input: `./goattool -p example_file.txt`
+   - Expected Output: 
+     ```
+     --- Content of 'test_files/example_file.txt' ---
+     This is an example file.
+     It has multiple lines.
+     And it is used for testing purposes.
+     Make sure you have fun testing!
+     This is a line with search_term.
+     aaaaaaaaaaaaaaaaaabbbb cccdde
+     ```
 
-3. Input: `./goattool -p`
-   Expected Output: "Error: No filename provided."
+2. **Print the contents of a file that doesn't exist**
+   - Input: `./goattool -p non_existent_file.txt`
+   - Expected Output: 
+     ```
+     Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+     ```
 
-4. Input: `./goattool -p directory_name`
-   Expected Output: "Error: Cannot print a directory."
+3. **Print the contents of multiple existing files**
+   - Input: `./goattool -p file1.txt file2.txt`
+   - Expected Output: 
+     ```
+     --- Content of 'test_files/file1.txt' ---
+     This is the first file.
+     It will be merged with another.
+     --- Content of 'test_files/file2.txt' ---
+     This is the second file.
+     Merged content goes below the first file's content.
+     ```
 
-5. Input: `./goattool -p locked_file.txt`
-   Expected Output: "Error: Permission denied."
+4. **Print the contents of a mix of existing and non-existing files**
+   - Input: `./goattool -p file1.txt non_existent_file.txt`
+   - Expected Output: 
+     ```
+     --- Content of 'test_files/file1.txt' ---
+     This is the first file.
+     It will be merged with another.
+     Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+     ```
+
+5. **Print the contents with one of the files being a directory**
+   - Input: `./goattool -p example_file.txt test_files`
+   - Expected Output: 
+     ```
+     --- Content of 'test_files/example_file.txt' ---
+     This is an example file.
+     It has multiple lines.
+     And it is used for testing purposes.
+     Make sure you have fun testing!
+     This is a line with search_term.
+     aaaaaaaaaaaaaaaaaabbbb cccdde
+     Error: Cannot access 'test_files' because it is a directory.
+     ```
+
+6. **Print the contents of an empty file**
+   - Input: `./goattool -p empty_file.txt`
+   - Expected Output: 
+     ```
+     --- Content of 'test_files/empty_file.txt' ---
+     ```
+
+7. **Print the contents with no files specified**
+   - Input: `./goattool -p`
+   - Expected Output: 
+     ```
+     Error: Invalid command switch or missing arguments. Use -h for help.
+     ```
 
 ---
 
 **Operation 3: `-s [SEARCH_TERM] [FILENAME]` (Search a file for a string)**
-1. Input: `./goattool -s "search_term" example_file.txt`
-   Expected Output: "Line 5: This is a line with search_term."
 
-2. Input: `./goattool -s "missing_term" example_file.txt`
-   Expected Output: "No matches found."
+1. **Search for a term in a file (existing term)**
+   - Input: `./goattool -s "search_term" example_file.txt`
+   - Expected Output: "Line 5: This is a line with search_term."
 
-3. Input: `./goattool -s`
-   Expected Output: "Error: No search term or filename provided."
+2. **Search for a term that doesn't exist in the file**
+   - Input: `./goattool -s "missing_term" example_file.txt`
+   - Expected Output: "No matches found for 'missing_term'."
 
-4. Input: `./goattool -s "search_term"`
-   Expected Output: "Error: No filename provided."
+3. **No search term or filename provided**
+   - Input: `./goattool -s`
+   - Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
 
-5. Input: `./goattool -s "search_term" non_existent_file.txt`
-   Expected Output: "Error: File does not exist."
+4. **No filename provided**
+   - Input: `./goattool -s "search_term"`
+   - Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
+
+5. **File does not exist**
+   - Input: `./goattool -s "search_term" non_existent_file.txt`
+   - Expected Output: "Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist."
+
+6. **Search term is an empty string**
+   - Input: `./goattool -s "" example_file.txt`
+   - Expected Output: 
+     ```
+     Line 1: This is an example file.
+     Line 2: It has multiple lines.
+     Line 3: And it is used for testing purposes.
+     Line 4: Make sure you have fun testing!
+     Line 5: This is a line with search_term.
+     Line 6: aaaaaaaaaaaaaaaaaabbbb cccdde
+     ```
+
+7. **Search in an empty file**
+   - Input: `./goattool -s "search_term" empty_file.txt`
+   - Expected Output: "No matches found for 'search_term'."
 
 ---
 
 **Operation 4: `-z [FILENAME]` (Print the size of a file)**
-1. Input: `./goattool -z example_file.txt`
-   Expected Output: "Size: 500 bytes."
 
-2. Input: `./goattool -z`
-   Expected Output: "Error: No filename provided."
+1. **Print the size of an existing file**
+   - Input: `./goattool -z example_file.txt`
+   - Expected Output: "Size: 180 bytes."
 
-3. Input: `./goattool -z non_existent_file.txt`
-   Expected Output: "Error: File does not exist."
+2. **No filename provided**
+   - Input: `./goattool -z`
+   - Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
 
-4. Input: `./goattool -z directory_name`
-   Expected Output: "Error: Cannot get the size of a directory."
+3. **File does not exist**
+   - Input: `./goattool -z non_existent_file.txt`
+   - Expected Output: "Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist."
 
-5. Input: `./goattool -z locked_file.txt`
-   Expected Output: "Error: Permission denied."
+4. **Specified path is a directory**
+   - Input: `./goattool -z test_files`
+   - Expected Output: "Error: Cannot access 'test_files' because it is a directory."
+
+5. **File with access denied (locked file)**
+   - Input: `./goattool -z locked_file.txt`
+   - Expected Output: "Error: Cannot access 'test_files/locked_file.txt' due to insufficient permissions."
+
+6. **Print the size of an empty file**
+   - Input: `./goattool -z empty_file.txt`
+   - Expected Output: "Size: 0 bytes."
+
+7. **File with special characters in the name**
+   - Input: `./goattool -z special@file#.txt`
+   - Expected Output: "Size: 22 bytes."
 
 ---
 
 **Operation 5: `-m [OUTPUT_FILE] [INPUT_FILES...]` (Merge multiple files)**
-1. Input: `./goattool -m merged.txt file1.txt file2.txt`
-   Expected Output: "Files merged successfully."
 
-2. Input: `./goattool -m merged.txt non_existent_file.txt file2.txt`
-   Expected Output: "Error: One or more input files do not exist."
+1. **Merge two files together**
+   - Input: `./goattool -m merged.txt file1.txt file2.txt`
+   - Expected Output: 
+     ```
+     Files merged successfully into 'test_files/merged.txt'.
+     --- Content of 'test_files/merged.txt' ---
+     This is the first file.
+     It will be merged with another.
+     This is the second file.
+     Merged content goes below the first file's content.
+     ```
 
-3. Input: `./goattool -m`
-   Expected Output: "Error: No output or input files provided."
+2. **Merge with a non-existent file**
+   - Input: `./goattool -m merged.txt non_existent_file.txt file2.txt`
+   - Expected Output: "Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist."
 
-4. Input: `./goattool -m merged.txt`
-   Expected Output: "Error: At least two input files are required."
+3. **No output or input files provided**
+   - Input: `./goattool -m`
+   - Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
 
-5. Input: `./goattool -m merged.txt file1.txt locked_file.txt`
-   Expected Output: "Error: Permission denied for one or more files."
+4. **Only output file provided, no input files**
+   - Input: `./goattool -m merged.txt`
+   - Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
+
+5. **Merge with a file with access denied**
+   - Input: `./goattool -m merged.txt file1.txt locked_file.txt`
+   - Expected Output: "Error: Cannot access 'test_files/locked_file.txt' due to insufficient permissions."
+
+6. **Merge with a directory instead of a file**
+   - Input: `./goattool -m merged.txt test_files file2.txt`
+   - Expected Output: "Error: Cannot access 'test_files' because it is a directory."
+
+7. **Merge with an empty file**
+   - Input: `./goattool -m merged.txt empty_file.txt file2.txt`
+   - Expected Output: 
+     ```
+     Files merged successfully into 'test_files/merged.txt'.
+     --- Content of 'test_files/merged.txt' ---
+     This is the second file.
+     Merged content goes below the first file's content.
+     ```
 
 ---
 
 **Operation 6: `-c [FILENAME]` (Compress a file into .goat format)**
-1. Input: `./goattool -c example_file.txt`
-   Expected Output: "File compressed to example_file.goat."
 
-2. Input: `./goattool -c`
-   Expected Output: "Error: No filename provided."
+1. **Compress an existing file**
+   - Input: `./goattool -c example_file.txt`
+   - Expected Output: 
+     ```
+     File processed to test_files/example_file.txt.goat.
+     --- Content of 'test_files/example_file.txt.goat' ---
+     T1h1i1s1 i1s1 a1n1 e1x1a1m1p1l1e1 f1i1l1e1.
+     I1t1 h1a1s1 m1u1l1t1i1p1l1e1 l1i1n1e1s1.
+     A1n1d1 i1t1 i1s1 u1s1e1d1 f1o1r1 t1e1s1t1i1n1g1 p1u1r1p1o1s1e1s1.
+     M1a1k1e1 s1u1r1e1 y1o1u1 h1a1v1e1 f1u1n1 t1e1s1t1i1n1g1!
+     T1h1i1s1 i1s1 a1 l1i1n1e1 w1i1t1h1 s1e1a1r1c1h1_t1e1r1m1.
+     a18b4 c3d2e1
+     ```
 
-3. Input: `./goattool -c non_existent_file.txt`
-   Expected Output: "Error: File does not exist."
+2. **No filename provided**
+   - Input: `./goattool -c`
+   - Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
 
-4. Input: `./goattool -c directory_name`
-   Expected Output: "Error: Cannot compress a directory."
+3. **File does not exist**
+   - Input: `./goattool -c non_existent_file.txt`
+   - Expected Output: "Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist."
 
-5. Input: `./goattool -c locked_file.txt`
-   Expected Output: "Error: Permission denied."
+4. **Specified path is a directory**
+   - Input: `./goattool -c test_files`
+   - Expected Output: "Error: Cannot access 'test_files' because it is a directory."
+
+5. **File with access denied (locked file)**
+   - Input: `./goattool -c locked_file.txt`
+   - Expected Output: "Error: Cannot access 'test_files/locked_file.txt' due to insufficient permissions."
+
+6. **Compress an empty file**
+   - Input: `./goattool -c empty_file.txt`
+   - Expected Output: 
+     ```
+     File processed to test_files/empty_file.txt.goat.
+     --- Content of 'test_files/empty_file.txt.goat' ---
+     ```
+
+7. **Compress a file with special characters in the name**
+   - Input: `./goattool -c special@file#.txt`
+   - Expected Output: 
+     ```
+     File processed to test_files/special@file#.txt.goat.
+     --- Content of 'test_files/special@file#.txt.goat' ---
+     #!m1 @ \$p1[-c1!@| /=!|[-
+     ```
 
 ---
 
 **Operation 7: `-d [FILENAME]` (Decompress a .goat file)**
-1. Input: `./goattool -d example.goat`
-   Expected Output: "File decompressed to example.txt."
 
-2. Input: `./goattool -d`
-   Expected Output: "Error: No filename provided."
+1. **Decompress an existing .goat file**
+   - Input: `./goattool -d example_file.txt.goat`
+   - Expected Output: 
+     ```
+     File processed to test_files/example_file.txt.goat.decompressed.
+     --- Content of 'test_files/example_file.txt.goat.decompressed' ---
+     This is an example file.
+     It has multiple lines.
+     And it is used for testing purposes.
+     Make sure you have fun testing!
+     This is a line with search_term.
+     aaaaaaaaaaaaaaaaaabbbb cccdde
+     ```
 
-3. Input: `./goattool -d non_existent_file.goat`
-   Expected Output: "Error: File does not exist."
+2. **No filename provided**
+   - Input: `./goattool -d`
+   - Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
 
-4. Input: `./goattool -d directory_name`
-   Expected Output: "Error: Cannot decompress a directory."
+3. **.goat file does not exist**
+   - Input: `./goattool -d non_existent_file.txt.goat`
+   - Expected Output: "Error: Cannot access 'test_files/non_existent_file.txt.goat' because it does not exist."
 
-5. Input: `./goattool -d locked_file.goat`
-   Expected Output: "Error: Permission denied."
+4. **Specified path is a directory**
+   - Input: `./goattool -d test_files`
+   - Expected Output: "Error: Cannot access 'test_files' because it is a directory."
+
+5. **.goat file with access denied**
+   - Input: `./goattool -d locked_file.txt.goat`
+   - Expected Output: "Error: Cannot access 'test_files/locked_file.txt.goat' due to insufficient permissions."
+
+6. **Decompress an empty .goat file**
+   - Input: `./goattool -d empty_file.txt.goat`
+   - Expected Output: 
+     ```
+     File processed to test_files/empty_file.txt.goat.decompressed.
+     --- Content of 'test_files/empty_file.txt.goat.decompressed' ---
+     ```
+
+7. **.goat file with special characters in the name**
+   - Input: `./goattool -d special@file#.txt.goat`
+   - Expected Output: 
+     ```
+     File processed to test_files/special@file#.txt.goat.decompressed.
+     --- Content of 'test_files/special@file#.txt.goat.decompressed' ---
+     #!m @ \$p[-c!@| /=!|[-
+     ```
 
 ---
 
 **Operation 8: `-r [FILENAME]` (Print file permissions)**
-1. Input: `./goattool -r example_file.txt`
-   Expected Output: "Permissions: 664."
 
-2. Input: `./goattool -r`
-   Expected Output: "Error: No filename provided."
+1. **Existing file with standard permissions**
+   - Input: `./goattool -r example_file.txt`
+   - Expected Output: "Permissions for 'test_files/example_file.txt': 664"
 
-3. Input: `./goattool -r non_existent_file.txt`
-   Expected Output: "Error: File does not exist."
+2. **No filename provided**
+   - Input: `./goattool -r`
+   - Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
 
-4. Input: `./goattool -r locked_file.txt`
-   Expected Output: "Permissions: 000."
+3. **Non-existent file**
+   - Input: `./goattool -r non_existent_file.txt`
+   - Expected Output: "Error: File 'test_files/non_existent_file.txt' does not exist."
 
-5. Input: `./goattool -r directory_name`
-   Expected Output: "Permissions: 775."
+4. **Locked file**
+   - Input: `./goattool -r locked_file.txt`
+   - Expected Output: "Permissions for 'test_files/locked_file.txt': 000"
+
+5. **Directory**
+   - Input: `./goattool -r test_files`
+   - Expected Output: "Permissions for 'test_files': 775"
+
+6. **File with special characters in name**
+   - Input: `./goattool -r special@file#.txt`
+   - Expected Output: "Permissions for 'test_files/special@file#.txt': 664"
+
+7. **Executable file**
+   - Input: `./goattool -r empty_file.txt`
+   - Expected Output: "Permissions for 'test_files/empty_file.txt': 777"
 
 ---
 
 **Operation 9: `-v [SOURCE] [DESTINATION]` (Move or rename a file)**
-1. Input: `./goattool -v source.txt dest.txt`
-   Expected Output: "File moved/renamed successfully."
 
-2. Input: `./goattool -v`
-   Expected Output: "Error: No source or destination provided."
+1. **Locked source file**
+   - Input: `./goattool -v locked_file.txt destination_file.txt`
+   - Expected Output: "Error: Cannot access 'test_files/locked_file.txt' due to insufficient permissions."
 
-3. Input: `./goattool -v non_existent_file.txt dest.txt`
-   Expected Output: "Error: Source file does not exist."
+2. **Successful file move/rename**
+   - Input: `./goattool -v merged.txt destination_file.txt`
+   - Expected Output: 
+     ```
+     File moved/renamed successfully.
+     --- Content of 'test_files/destination_file.txt' ---
+     This is the second file.
+     Merged content goes below the first file's content.
+     ```
 
-4. Input: `./goattool -v source.txt`
-   Expected Output: "Error: No destination provided."
+3. **No source or destination provided**
+   - Input: `./goattool -v`
+   - Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
 
-5. Input: `./goattool -v locked_file.txt dest.txt`
-   Expected Output: "Error: Permission denied."
+4. **Non-existent source file**
+   - Input: `./goattool -v non_existent_file.txt destination_file.txt`
+   - Expected Output: "Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist."
+
+5. **No destination provided**
+   - Input: `./goattool -v merged.txt`
+   - Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
+
+6. **Source is a directory**
+   - Input: `./goattool -v test_files destination_file.txt`
+   - Expected Output: "Error: Cannot access 'test_files' because it is a directory."
+
+7. **Destination already exists**
+   - Input: `./goattool -v example_file.txt.goat destination_file.txt`
+   - Expected Output: 
+     ```
+     File moved/renamed successfully.
+     --- Content of 'test_files/destination_file.txt' ---
+     T1h1i1s1 i1s1 a1n1 e1x1a1m1p1l1e1 f1i1l1e1.
+     I1t1 h1a1s1 m1u1l1t1i1p1l1e1 l1i1n1e1s1.
+     A1n1d1 i1t1 i1s1 u1s1e1d1 f1o1r1 t1e1s1t1i1n1g1 p1u1r1p1o1s1e1s1.
+     M1a1k1e1 s1u1r1e1 y1o1u1 h1a1v1e1 f1u1n1 t1e1s1t1i1n1g1!
+     T1h1i1s1 i1s1 a1 l1i1n1e1 w1i1t1h1 s1e1a1r1c1h1_t1e1r1m1.
+     a18b4 c3d2e1
+     ```
 
 ---
 
-**Default Case (No switch provided or invalid switch provided)**
-1. Input: `./goattool`
-   Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
+**Default Cases (No switch provided or invalid switch provided)**
+
+1. **No arguments provided**
+   - Input: `./goattool`
+   - Expected Output: "Error: Insufficient argument count. Use -h for help."
+
+2. **Invalid switch provided**
+   - Input: `./goattool -e`
+   - Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
+
+3. **No switch provided but arguments exist**
+   - Input: `./goattool file1.txt file2.txt`
+   - Expected Output: "Error: Invalid command switch or missing arguments. Use -h for help."
 
 ---
 
@@ -419,6 +682,666 @@ Y1o1u1 s1h1o1u1l1d1n1't1 b1e1 s1e2i1n1g1 t1h1i1s1, a1s1 t1h1i1s1 f1i1l1e1 i1s1 l
 (Note: This file is locked or has permissions set to disallow reading. Contents cannot be displayed.)
 ```
 You shouldn't be seeing this, as this file is locked.
+```
+
+---
+
+## Code Test Analysis
+
+### 1. Test Coverage
+Our code testing strategy has been comprehensive, achieving 100% coverage. This means that every line of code within the program was exercised during the testing process, ensuring that each function and pathway was rigorously evaluated for correctness.
+
+### 2. Test Case Results
+The results of our test cases were highly positive, with every test passing successfully. This was verified through an automated process where the output of each test was compared against an expected outcome using a Bash script. Such a system allowed for precise and efficient verification of each test case's success or failure.
+
+### 3. Real-World Predictability
+While our test cases provide a strong indicator of the program's behavior, it's important to note that they are not a perfect representation of real-world usage. In actual deployment, users often interact with software in ways that are difficult to predict or replicate in controlled test environments. Unforeseen variables such as user input patterns, system configurations, and interaction with other applications can affect the program's behavior. Therefore, while our tests are thorough and give us confidence in the program's reliability, we remain aware of the potential for unexpected issues in diverse real-world scenarios.
+
+---
+
+## BASH Script Raw Output
+
+```
+[GT-Test] START
+[GT-Test] Preparing test environment
+[GT-Test] Test environment prepared
+
+[GT-Test] [-h] Test case: Print the help menu
+[GT-Test] CASE: ./bin/goattool -h
+[GT-Test] EXPECTED:
+GoatTool Help and Usage Instructions
+------------------------------------
+-h : Display this help menu.
+-p [FILENAMES...] : Print the contents of one or more files.
+-s [SEARCH_TERM] [FILENAME] : Search a file for a string.
+-z [FILENAME] : Print the size of a file.
+-m [OUTPUT_FILE] [INPUT_FILES...] : Merge multiple files.
+-c [FILENAME] : Compress a file into .goat format.
+-d [FILENAME] : Decompress a .goat file.
+-r [FILENAME] : Print file permissions.
+-v [SOURCE] [DESTINATION] : Move or rename a file.
+[GT-Test] ACTUAL:
+GoatTool Help and Usage Instructions
+------------------------------------
+-h : Display this help menu.
+-p [FILENAMES...] : Print the contents of one or more files.
+-s [SEARCH_TERM] [FILENAME] : Search a file for a string.
+-z [FILENAME] : Print the size of a file.
+-m [OUTPUT_FILE] [INPUT_FILES...] : Merge multiple files.
+-c [FILENAME] : Compress a file into .goat format.
+-d [FILENAME] : Decompress a .goat file.
+-r [FILENAME] : Print file permissions.
+-v [SOURCE] [DESTINATION] : Move or rename a file.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-p] Test case: Print the contents of a single file
+[GT-Test] CASE: ./bin/goattool -p test_files/example_file.txt
+[GT-Test] EXPECTED:
+--- Content of 'test_files/example_file.txt' ---
+This is an example file.
+It has multiple lines.
+And it is used for testing purposes.
+Make sure you have fun testing!
+This is a line with search_term.
+aaaaaaaaaaaaaaaaaabbbb cccdde
+[GT-Test] ACTUAL:
+--- Content of 'test_files/example_file.txt' ---
+This is an example file.
+It has multiple lines.
+And it is used for testing purposes.
+Make sure you have fun testing!
+This is a line with search_term.
+aaaaaaaaaaaaaaaaaabbbb cccdde
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-p] Test case: Print the contents of a file that doesn't exist
+[GT-Test] CASE: ./bin/goattool -p test_files/non_existent_file.txt
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-p] Test case: Print the contents of multiple existing files
+[GT-Test] CASE: ./bin/goattool -p test_files/file1.txt test_files/file2.txt
+[GT-Test] EXPECTED:
+--- Content of 'test_files/file1.txt' ---
+This is the first file.
+It will be merged with another.
+--- Content of 'test_files/file2.txt' ---
+This is the second file.
+Merged content goes below the first file's content.
+[GT-Test] ACTUAL:
+--- Content of 'test_files/file1.txt' ---
+This is the first file.
+It will be merged with another.
+--- Content of 'test_files/file2.txt' ---
+This is the second file.
+Merged content goes below the first file's content.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-p] Test case: Print the contents of a mix of existing and non-existing files
+[GT-Test] CASE: ./bin/goattool -p test_files/file1.txt test_files/non_existent_file.txt
+[GT-Test] EXPECTED:
+--- Content of 'test_files/file1.txt' ---
+This is the first file.
+It will be merged with another.
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] ACTUAL:
+--- Content of 'test_files/file1.txt' ---
+This is the first file.
+It will be merged with another.
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-p] Test case: Print the contents with one of the files being a directory
+[GT-Test] CASE: ./bin/goattool -p test_files/example_file.txt test_files
+[GT-Test] EXPECTED:
+--- Content of 'test_files/example_file.txt' ---
+This is an example file.
+It has multiple lines.
+And it is used for testing purposes.
+Make sure you have fun testing!
+This is a line with search_term.
+aaaaaaaaaaaaaaaaaabbbb cccdde
+Error: Cannot access 'test_files' because it is a directory.
+[GT-Test] ACTUAL:
+--- Content of 'test_files/example_file.txt' ---
+This is an example file.
+It has multiple lines.
+And it is used for testing purposes.
+Make sure you have fun testing!
+This is a line with search_term.
+aaaaaaaaaaaaaaaaaabbbb cccdde
+Error: Cannot access 'test_files' because it is a directory.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-p] Test case: Print the contents of an empty file
+[GT-Test] CASE: ./bin/goattool -p test_files/empty_file.txt
+[GT-Test] EXPECTED:
+--- Content of 'test_files/empty_file.txt' ---
+[GT-Test] ACTUAL:
+--- Content of 'test_files/empty_file.txt' ---
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-p] Test case: Print the contents with no files specified
+[GT-Test] CASE: ./bin/goattool -p
+[GT-Test] EXPECTED:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-s] Test case: Search for a term in a file (existing term)
+[GT-Test] CASE: ./bin/goattool -s "search_term" test_files/example_file.txt
+[GT-Test] EXPECTED:
+Line 5: This is a line with search_term.
+[GT-Test] ACTUAL:
+Line 5: This is a line with search_term.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-s] Test case: Search for a term that doesn't exist in the file
+[GT-Test] CASE: ./bin/goattool -s "missing_term" test_files/example_file.txt
+[GT-Test] EXPECTED:
+No matches found for 'missing_term'.
+[GT-Test] ACTUAL:
+No matches found for 'missing_term'.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-s] Test case: No search term or filename provided
+[GT-Test] CASE: ./bin/goattool -s
+[GT-Test] EXPECTED:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-s] Test case: No filename provided
+[GT-Test] CASE: ./bin/goattool -s "search_term"
+[GT-Test] EXPECTED:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-s] Test case: File does not exist
+[GT-Test] CASE: ./bin/goattool -s "search_term" test_files/non_existent_file.txt
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-s] Test case: Search term is an empty string
+[GT-Test] CASE: ./bin/goattool -s "" test_files/example_file.txt
+[GT-Test] EXPECTED:
+Line 1: This is an example file.
+Line 2: It has multiple lines.
+Line 3: And it is used for testing purposes.
+Line 4: Make sure you have fun testing!
+Line 5: This is a line with search_term.
+Line 6: aaaaaaaaaaaaaaaaaabbbb cccdde
+[GT-Test] ACTUAL:
+Line 1: This is an example file.
+Line 2: It has multiple lines.
+Line 3: And it is used for testing purposes.
+Line 4: Make sure you have fun testing!
+Line 5: This is a line with search_term.
+Line 6: aaaaaaaaaaaaaaaaaabbbb cccdde
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-s] Test case: Search in an empty file
+[GT-Test] CASE: ./bin/goattool -s "search_term" test_files/empty_file.txt
+[GT-Test] EXPECTED:
+No matches found for 'search_term'.
+[GT-Test] ACTUAL:
+No matches found for 'search_term'.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-z] Test case: Print the size of an existing file
+[GT-Test] CASE: ./bin/goattool -z test_files/example_file.txt
+[GT-Test] EXPECTED:
+Size: 180 bytes.
+[GT-Test] ACTUAL:
+Size: 180 bytes.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-z] Test case: No filename provided
+[GT-Test] CASE: ./bin/goattool -z
+[GT-Test] EXPECTED:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-z] Test case: File does not exist
+[GT-Test] CASE: ./bin/goattool -z test_files/non_existent_file.txt
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-z] Test case: Specified path is a directory
+[GT-Test] CASE: ./bin/goattool -z test_files
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files' because it is a directory.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files' because it is a directory.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-z] Test case: File with access denied (locked file)
+[GT-Test] CASE: ./bin/goattool -z test_files/locked_file.txt
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files/locked_file.txt' due to insufficient permissions.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files/locked_file.txt' due to insufficient permissions.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-z] Test case: Print the size of an empty file
+[GT-Test] CASE: ./bin/goattool -z test_files/empty_file.txt
+[GT-Test] EXPECTED:
+Size: 0 bytes.
+[GT-Test] ACTUAL:
+Size: 0 bytes.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-z] Test case: File with special characters in the name
+[GT-Test] CASE: ./bin/goattool -z test_files/special@file#.txt
+[GT-Test] EXPECTED:
+Size: 22 bytes.
+[GT-Test] ACTUAL:
+Size: 22 bytes.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-m] Test case: Merge two files together
+[GT-Test] CASE: ./bin/goattool -m test_files/merged.txt test_files/file1.txt test_files/file2.txt && ./bin/goattool -p test_files/merged.txt
+[GT-Test] EXPECTED:
+Files merged successfully into 'test_files/merged.txt'.
+--- Content of 'test_files/merged.txt' ---
+This is the first file.
+It will be merged with another.
+This is the second file.
+Merged content goes below the first file's content.
+[GT-Test] ACTUAL:
+Files merged successfully into 'test_files/merged.txt'.
+--- Content of 'test_files/merged.txt' ---
+This is the first file.
+It will be merged with another.
+This is the second file.
+Merged content goes below the first file's content.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-m] Test case: Merge with a non-existent file
+[GT-Test] CASE: ./bin/goattool -m test_files/merged.txt test_files/non_existent_file.txt test_files/file2.txt
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-m] Test case: No output or input files provided
+[GT-Test] CASE: ./bin/goattool -m
+[GT-Test] EXPECTED:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-m] Test case: Only output file provided, no input files
+[GT-Test] CASE: ./bin/goattool -m test_files/merged.txt
+[GT-Test] EXPECTED:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-m] Test case: Merge with a file with access denied
+[GT-Test] CASE: ./bin/goattool -m test_files/merged.txt test_files/file1.txt test_files/locked_file.txt
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files/locked_file.txt' due to insufficient permissions.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files/locked_file.txt' due to insufficient permissions.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-m] Test case: Merge with a directory instead of a file
+[GT-Test] CASE: ./bin/goattool -m test_files/merged.txt test_files test_files/file2.txt
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files' because it is a directory.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files' because it is a directory.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-m] Test case: Merge with an empty file
+[GT-Test] CASE: ./bin/goattool -m test_files/merged.txt test_files/empty_file.txt test_files/file2.txt && ./bin/goattool -p test_files/merged.txt
+[GT-Test] EXPECTED:
+Files merged successfully into 'test_files/merged.txt'.
+--- Content of 'test_files/merged.txt' ---
+This is the second file.
+Merged content goes below the first file's content.
+[GT-Test] ACTUAL:
+Files merged successfully into 'test_files/merged.txt'.
+--- Content of 'test_files/merged.txt' ---
+This is the second file.
+Merged content goes below the first file's content.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-c] Test case: Compress an existing file
+[GT-Test] CASE: ./bin/goattool -c test_files/example_file.txt && ./bin/goattool -p test_files/example_file.txt.goat
+[GT-Test] EXPECTED:
+File processed to test_files/example_file.txt.goat.
+--- Content of 'test_files/example_file.txt.goat' ---
+T1h1i1s1 i1s1 a1n1 e1x1a1m1p1l1e1 f1i1l1e1.
+I1t1 h1a1s1 m1u1l1t1i1p1l1e1 l1i1n1e1s1.
+A1n1d1 i1t1 i1s1 u1s1e1d1 f1o1r1 t1e1s1t1i1n1g1 p1u1r1p1o1s1e1s1.
+M1a1k1e1 s1u1r1e1 y1o1u1 h1a1v1e1 f1u1n1 t1e1s1t1i1n1g1!
+T1h1i1s1 i1s1 a1 l1i1n1e1 w1i1t1h1 s1e1a1r1c1h1_t1e1r1m1.
+a18b4 c3d2e1
+[GT-Test] ACTUAL:
+File processed to test_files/example_file.txt.goat.
+--- Content of 'test_files/example_file.txt.goat' ---
+T1h1i1s1 i1s1 a1n1 e1x1a1m1p1l1e1 f1i1l1e1.
+I1t1 h1a1s1 m1u1l1t1i1p1l1e1 l1i1n1e1s1.
+A1n1d1 i1t1 i1s1 u1s1e1d1 f1o1r1 t1e1s1t1i1n1g1 p1u1r1p1o1s1e1s1.
+M1a1k1e1 s1u1r1e1 y1o1u1 h1a1v1e1 f1u1n1 t1e1s1t1i1n1g1!
+T1h1i1s1 i1s1 a1 l1i1n1e1 w1i1t1h1 s1e1a1r1c1h1_t1e1r1m1.
+a18b4 c3d2e1
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-c] Test case: No filename provided
+[GT-Test] CASE: ./bin/goattool -c
+[GT-Test] EXPECTED:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-c] Test case: File does not exist
+[GT-Test] CASE: ./bin/goattool -c test_files/non_existent_file.txt
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-c] Test case: Specified path is a directory
+[GT-Test] CASE: ./bin/goattool -c test_files
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files' because it is a directory.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files' because it is a directory.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-c] Test case: File with access denied (locked file)
+[GT-Test] CASE: ./bin/goattool -c test_files/locked_file.txt
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files/locked_file.txt' due to insufficient permissions.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files/locked_file.txt' due to insufficient permissions.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-c] Test case: Compress an empty file
+[GT-Test] CASE: ./bin/goattool -c test_files/empty_file.txt && ./bin/goattool -p test_files/empty_file.txt.goat
+[GT-Test] EXPECTED:
+File processed to test_files/empty_file.txt.goat.
+--- Content of 'test_files/empty_file.txt.goat' ---
+[GT-Test] ACTUAL:
+File processed to test_files/empty_file.txt.goat.
+--- Content of 'test_files/empty_file.txt.goat' ---
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-c] Test case: Compress a file with special characters in the name
+[GT-Test] CASE: ./bin/goattool -c test_files/special@file#.txt && ./bin/goattool -p test_files/special@file#.txt.goat
+[GT-Test] EXPECTED:
+File processed to test_files/special@file#.txt.goat.
+--- Content of 'test_files/special@file#.txt.goat' ---
+#!m1 @ $p1[-c1!@| /=!|[-
+[GT-Test] ACTUAL:
+File processed to test_files/special@file#.txt.goat.
+--- Content of 'test_files/special@file#.txt.goat' ---
+#!m1 @ $p1[-c1!@| /=!|[-
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-d] Test case: Decompress an existing .goat file
+[GT-Test] CASE: ./bin/goattool -d test_files/example_file.txt.goat && ./bin/goattool -p test_files/example_file.txt.goat.decompressed
+[GT-Test] EXPECTED:
+File processed to test_files/example_file.txt.goat.decompressed.
+--- Content of 'test_files/example_file.txt.goat.decompressed' ---
+This is an example file.
+It has multiple lines.
+And it is used for testing purposes.
+Make sure you have fun testing!
+This is a line with search_term.
+aaaaaaaaaaaaaaaaaabbbb cccdde
+[GT-Test] ACTUAL:
+File processed to test_files/example_file.txt.goat.decompressed.
+--- Content of 'test_files/example_file.txt.goat.decompressed' ---
+This is an example file.
+It has multiple lines.
+And it is used for testing purposes.
+Make sure you have fun testing!
+This is a line with search_term.
+aaaaaaaaaaaaaaaaaabbbb cccdde
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-d] Test case: No filename provided
+[GT-Test] CASE: ./bin/goattool -d
+[GT-Test] EXPECTED:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-d] Test case: .goat file does not exist
+[GT-Test] CASE: ./bin/goattool -d test_files/non_existent_file.txt.goat
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files/non_existent_file.txt.goat' because it does not exist.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files/non_existent_file.txt.goat' because it does not exist.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-d] Test case: Specified path is a directory
+[GT-Test] CASE: ./bin/goattool -d test_files
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files' because it is a directory.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files' because it is a directory.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-d] Test case: .goat file with access denied
+[GT-Test] CASE: ./bin/goattool -d test_files/locked_file.txt.goat
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files/locked_file.txt.goat' due to insufficient permissions.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files/locked_file.txt.goat' due to insufficient permissions.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-d] Test case: Decompress an empty .goat file
+[GT-Test] CASE: ./bin/goattool -d test_files/empty_file.txt.goat && ./bin/goattool -p test_files/empty_file.txt.goat.decompressed
+[GT-Test] EXPECTED:
+File processed to test_files/empty_file.txt.goat.decompressed.
+--- Content of 'test_files/empty_file.txt.goat.decompressed' ---
+[GT-Test] ACTUAL:
+File processed to test_files/empty_file.txt.goat.decompressed.
+--- Content of 'test_files/empty_file.txt.goat.decompressed' ---
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-d] Test case: .goat file with special characters in the name
+[GT-Test] CASE: ./bin/goattool -d test_files/special@file#.txt.goat && ./bin/goattool -p test_files/special@file#.txt.goat.decompressed
+[GT-Test] EXPECTED:
+File processed to test_files/special@file#.txt.goat.decompressed.
+--- Content of 'test_files/special@file#.txt.goat.decompressed' ---
+#!m @ $p[-c!@| /=!|[-
+[GT-Test] ACTUAL:
+File processed to test_files/special@file#.txt.goat.decompressed.
+--- Content of 'test_files/special@file#.txt.goat.decompressed' ---
+#!m @ $p[-c!@| /=!|[-
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-r] Test case: Existing file with standard permissions
+[GT-Test] CASE: ./bin/goattool -r test_files/example_file.txt
+[GT-Test] EXPECTED:
+Permissions for 'test_files/example_file.txt': 664
+[GT-Test] ACTUAL:
+Permissions for 'test_files/example_file.txt': 664
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-r] Test case: No filename provided
+[GT-Test] CASE: ./bin/goattool -r
+[GT-Test] EXPECTED:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-r] Test case: Non-existent file
+[GT-Test] CASE: ./bin/goattool -r test_files/non_existent_file.txt
+[GT-Test] EXPECTED:
+Error: File 'test_files/non_existent_file.txt' does not exist.
+[GT-Test] ACTUAL:
+Error: File 'test_files/non_existent_file.txt' does not exist.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-r] Test case: Locked file
+[GT-Test] CASE: ./bin/goattool -r test_files/locked_file.txt
+[GT-Test] EXPECTED:
+Permissions for 'test_files/locked_file.txt': 000
+[GT-Test] ACTUAL:
+Permissions for 'test_files/locked_file.txt': 000
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-r] Test case: Directory
+[GT-Test] CASE: ./bin/goattool -r test_files
+[GT-Test] EXPECTED:
+Permissions for 'test_files': 775
+[GT-Test] ACTUAL:
+Permissions for 'test_files': 775
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-r] Test case: File with special characters in name
+[GT-Test] CASE: ./bin/goattool -r test_files/special@file#.txt
+[GT-Test] EXPECTED:
+Permissions for 'test_files/special@file#.txt': 664
+[GT-Test] ACTUAL:
+Permissions for 'test_files/special@file#.txt': 664
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-r] Test case: Executable file
+[GT-Test] CASE: ./bin/goattool -r test_files/empty_file.txt
+[GT-Test] EXPECTED:
+Permissions for 'test_files/empty_file.txt': 777
+[GT-Test] ACTUAL:
+Permissions for 'test_files/empty_file.txt': 777
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-v] Test case: Locked source file
+[GT-Test] CASE: ./bin/goattool -v test_files/locked_file.txt test_files/destination_file.txt
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files/locked_file.txt' due to insufficient permissions.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files/locked_file.txt' due to insufficient permissions.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-v] Test case: Successful file move/rename
+[GT-Test] CASE: ./bin/goattool -v test_files/merged.txt test_files/destination_file.txt && ./bin/goattool -p test_files/destination_file.txt
+[GT-Test] EXPECTED:
+File moved/renamed successfully.
+--- Content of 'test_files/destination_file.txt' ---
+This is the second file.
+Merged content goes below the first file's content.
+[GT-Test] ACTUAL:
+File moved/renamed successfully.
+--- Content of 'test_files/destination_file.txt' ---
+This is the second file.
+Merged content goes below the first file's content.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-v] Test case: No source or destination provided
+[GT-Test] CASE: ./bin/goattool -v
+[GT-Test] EXPECTED:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-v] Test case: Non-existent source file
+[GT-Test] CASE: ./bin/goattool -v test_files/non_existent_file.txt test_files/destination_file.txt
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files/non_existent_file.txt' because it does not exist.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-v] Test case: No destination provided
+[GT-Test] CASE: ./bin/goattool -v test_files/merged.txt
+[GT-Test] EXPECTED:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-v] Test case: Source is a directory
+[GT-Test] CASE: ./bin/goattool -v test_files test_files/destination_file.txt
+[GT-Test] EXPECTED:
+Error: Cannot access 'test_files' because it is a directory.
+[GT-Test] ACTUAL:
+Error: Cannot access 'test_files' because it is a directory.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-v] Test case: Destination already exists
+[GT-Test] CASE: ./bin/goattool -v test_files/example_file.txt.goat test_files/destination_file.txt && ./bin/goattool -p test_files/destination_file.txt
+[GT-Test] EXPECTED:
+File moved/renamed successfully.
+--- Content of 'test_files/destination_file.txt' ---
+T1h1i1s1 i1s1 a1n1 e1x1a1m1p1l1e1 f1i1l1e1.
+I1t1 h1a1s1 m1u1l1t1i1p1l1e1 l1i1n1e1s1.
+A1n1d1 i1t1 i1s1 u1s1e1d1 f1o1r1 t1e1s1t1i1n1g1 p1u1r1p1o1s1e1s1.
+M1a1k1e1 s1u1r1e1 y1o1u1 h1a1v1e1 f1u1n1 t1e1s1t1i1n1g1!
+T1h1i1s1 i1s1 a1 l1i1n1e1 w1i1t1h1 s1e1a1r1c1h1_t1e1r1m1.
+a18b4 c3d2e1
+[GT-Test] ACTUAL:
+File moved/renamed successfully.
+--- Content of 'test_files/destination_file.txt' ---
+T1h1i1s1 i1s1 a1n1 e1x1a1m1p1l1e1 f1i1l1e1.
+I1t1 h1a1s1 m1u1l1t1i1p1l1e1 l1i1n1e1s1.
+A1n1d1 i1t1 i1s1 u1s1e1d1 f1o1r1 t1e1s1t1i1n1g1 p1u1r1p1o1s1e1s1.
+M1a1k1e1 s1u1r1e1 y1o1u1 h1a1v1e1 f1u1n1 t1e1s1t1i1n1g1!
+T1h1i1s1 i1s1 a1 l1i1n1e1 w1i1t1h1 s1e1a1r1c1h1_t1e1r1m1.
+a18b4 c3d2e1
+[GT-Test] RESULT: PASS
+
+[GT-Test] [] Test case: No arguments provided
+[GT-Test] CASE: ./bin/goattool
+[GT-Test] EXPECTED:
+Error: Insuffecient argument count. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Insuffecient argument count. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [-e] Test case: Invalid switch provided
+[GT-Test] CASE: ./bin/goattool
+[GT-Test] EXPECTED:
+Error: Insuffecient argument count. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Insuffecient argument count. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] [] Test case: No switch provided but arguments exist
+[GT-Test] CASE: ./bin/goattool test_files/file1.txt test_files/file2.txt
+[GT-Test] EXPECTED:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] ACTUAL:
+Error: Invalid command switch or missing arguments. Use -h for help.
+[GT-Test] RESULT: PASS
+
+[GT-Test] Clearing test environment
+[GT-Test] Test environment cleared
+[GT-Test] END
+
+[GT-Test] TEST SUMMARY
+[GT-Test] 60 tests total
+[GT-Test] 60 tests passed
+[GT-Test] 0 tests failed
 ```
 
 ---

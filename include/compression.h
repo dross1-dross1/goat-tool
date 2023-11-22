@@ -32,6 +32,32 @@ char* compress_string(const char* str);
 char* decompress_string(const char* str);
 
 /**
+ * @brief Compresses or decompresses a line of text.
+ *
+ * This function is a generic line processing function used for parallel
+ * processing of file lines. It applies either compression or decompression
+ * based on the function pointer provided.
+ *
+ * @param arg A pointer to LineData containing the line to be processed.
+ * @return NULL
+ */
+void* process_line(void* arg);
+
+/**
+ * @brief Processes a file using a specified line processing function.
+ *
+ * This function reads a file line by line and uses multiple threads to
+ * compress or decompress each line. The processed lines are then written
+ * to an output file.
+ *
+ * @param filename The path of the file to process.
+ * @param output_filename The path of the file to write processed lines.
+ * @param process_line The function to use for line processing.
+ * @return 0 on success, -1 on failure.
+ */
+int process_file(const char* filename, const char* output_filename, void* (*process_line)(void*));
+
+/**
  * @brief Compresses the contents of a file using the custom compression algorithm.
  *
  * This function reads the contents of a file specified by `filename`, compresses each line

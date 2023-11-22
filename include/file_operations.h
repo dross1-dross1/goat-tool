@@ -16,8 +16,9 @@
  *
  * @param num_files The number of files to print.
  * @param filenames The array of paths to the files.
+ * @return 0 on success, -1 on failure.
  */
-void print_file_content(int num_files, const char** filenames);
+int print_file_content(int num_files, const char** filenames);
 
 /**
  * @brief Prints the size of a specified file in bytes.
@@ -27,8 +28,9 @@ void print_file_content(int num_files, const char** filenames);
  * is a directory and handles file existence.
  *
  * @param filename The path to the file.
+ * @return 0 on success, -1 on failure.
  */
-void print_size(const char* filename);
+int print_size(const char* filename);
 
 /**
  * @brief Merges multiple files into one output file.

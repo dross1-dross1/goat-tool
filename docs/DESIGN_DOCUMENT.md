@@ -228,7 +228,7 @@ File decompressed to example.txt
 
 ## Function Call Graph
 
-![Function Call Diagram](assets/function_call_diagram.png)
+![Function Call Diagram](../assets/function_call_diagram.png)
 
 ---
 
